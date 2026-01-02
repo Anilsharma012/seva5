@@ -304,6 +304,25 @@ export interface IMember extends Document {
   membershipNumber?: string;
   isActive: boolean;
   isVerified: boolean;
+  iCardId?: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IMemberCard extends Document {
+  memberId: mongoose.Types.ObjectId;
+  membershipNumber: string;
+  memberName: string;
+  memberEmail: string;
+  memberPhone: string;
+  memberCity?: string;
+  memberAddress?: string;
+  cardNumber: string;
+  qrCodeUrl?: string;
+  cardImageUrl?: string;
+  isGenerated: boolean;
+  validFrom: string;
+  validUntil: string;
   createdAt: Date;
   updatedAt: Date;
 }
