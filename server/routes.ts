@@ -1627,7 +1627,6 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(403).json({ error: "Only members can access this endpoint" });
       }
 
-      const { Member } = require('./models');
       const member = await Member.findById(req.user.id);
 
       if (!member) {
