@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, Search, Check } from "lucide-react";
+import { CreditCard, Search, Check, X } from "lucide-react";
 
 const feeLevels = [
   { id: "village", name: "Village Level", amount: 99 },
@@ -22,6 +23,22 @@ interface Student {
   feeLevel: string;
   feeAmount: number;
   feePaid: boolean;
+}
+
+interface PaymentTransaction {
+  id: string;
+  type: string;
+  name: string;
+  email?: string;
+  phone: string;
+  amount: number;
+  transactionId: string;
+  paymentMethod?: string;
+  purpose?: string;
+  status: string;
+  createdAt: string;
+  approvedAt?: string;
+  approvedBy?: string;
 }
 
 export default function AdminFees() {
