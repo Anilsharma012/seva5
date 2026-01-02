@@ -71,6 +71,12 @@ export default function MemberDashboard() {
     }
   }, [isMember, user, authLoading, navigate]);
 
+  useEffect(() => {
+    if (activeTab === "icard" && user?.id) {
+      fetchMemberICard();
+    }
+  }, [activeTab, user?.id]);
+
   const fetchMemberData = async () => {
     try {
       const token = localStorage.getItem("auth_token");
