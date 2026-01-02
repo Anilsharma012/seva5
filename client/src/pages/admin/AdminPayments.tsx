@@ -276,9 +276,23 @@ export default function AdminPayments() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="display-order">Display Order</Label>
-                  <Input id="display-order" type="number" value={form.order} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} data-testid="input-order" />
+                  <Label htmlFor="fee-level">Fee Level (if type is Fee)</Label>
+                  <Select value={form.level} onValueChange={(v: any) => setForm({ ...form, level: v })}>
+                    <SelectTrigger id="fee-level" data-testid="select-level">
+                      <SelectValue placeholder="Select level (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">None</SelectItem>
+                      {levelOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="display-order">Display Order</Label>
+                <Input id="display-order" type="number" value={form.order} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} data-testid="input-order" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
