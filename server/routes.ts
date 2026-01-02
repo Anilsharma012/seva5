@@ -1667,6 +1667,32 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  app.get("/api/auth/member/icard", authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      if (req.user?.role !== "member") {
+        return res.status(403).json({ error: "Only members can access this endpoint" });
+      }
+
+      const member = await Member.findById(req.user.id);
+
+      if (!member) {
+        return res.status(404).json({ error: "Member not found" });
+      }
+
+      // Get I-Card for this member
+      const iCard = await storage.getMemberCardByMemberId(member._id.toString());
+
+      if (!iCard) {
+        return res.status(404).json({ error: "I-Card not generated yet. Please wait for admin to verify your membership." });
+      }
+
+      res.json(iCard);
+    } catch (error) {
+      console.error("Error fetching member I-Card:", error);
+      res.status(500).json({ error: "Failed to fetch I-Card" });
+    }
+  });
+
   // ============ ADMIN MEMBER MANAGEMENT ROUTES ============
   app.get("/api/admin/members", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
     try {
