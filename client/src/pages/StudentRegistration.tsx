@@ -24,7 +24,7 @@ interface PaymentConfig {
   ifscCode?: string;
   accountHolderName?: string;
   isActive: boolean;
-  level?: string;
+  level?: "village" | "block" | "district" | "haryana";
 }
 
 const feeLevels = [
@@ -80,8 +80,8 @@ export default function StudentRegistration() {
 
   // Get payment config for selected fee level
   const feeConfig = paymentConfigs.find(config =>
-    config.name?.toLowerCase().includes(formData.feeLevel.toLowerCase())
-  ) || paymentConfigs[0];
+    config.level === formData.feeLevel
+  ) || paymentConfigs.find(config => config.type === 'fee') || paymentConfigs[0];
 
   const hasQR = feeConfig?.qrCodeUrl;
   const hasUPI = feeConfig?.upiId;
