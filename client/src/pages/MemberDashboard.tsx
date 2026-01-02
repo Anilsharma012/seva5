@@ -5,7 +5,8 @@ import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, LogOut, Mail, Phone, MapPin, Loader2, Settings, CreditCard, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { Users, LogOut, Mail, Phone, MapPin, Loader2, Settings, CreditCard, CheckCircle, Clock, AlertCircle, CreditCard as ICardIcon } from "lucide-react";
+import MemberICard from "@/components/member/MemberICard";
 
 interface MemberData {
   id: string;
