@@ -18,6 +18,7 @@ const feeLevels = [
 
 interface Student {
   id: number;
+  email?: string;
   registrationNumber: string;
   fullName: string;
   feeLevel: string;
