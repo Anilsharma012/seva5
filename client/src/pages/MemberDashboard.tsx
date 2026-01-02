@@ -32,6 +32,7 @@ export default function MemberDashboard() {
   const { user, logout, isMember, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [member, setMember] = useState<MemberData | null>(null);
+  const [transactions, setTransactions] = useState<PaymentTransaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
 
@@ -40,9 +41,10 @@ export default function MemberDashboard() {
       navigate("/member/login");
       return;
     }
-    
+
     if (user?.id) {
       fetchMemberData();
+      fetchPaymentTransactions();
     }
   }, [isMember, user, authLoading, navigate]);
 
@@ -52,7 +54,7 @@ export default function MemberDashboard() {
       const res = await fetch("/api/auth/member/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         setMember({
@@ -70,6 +72,22 @@ export default function MemberDashboard() {
       console.error("Error fetching member data:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchPaymentTransactions = async () => {
+    try {
+      const token = localStorage.getItem("auth_token");
+      const res = await fetch("/api/auth/member/transactions", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setTransactions(data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
     }
   };
 
