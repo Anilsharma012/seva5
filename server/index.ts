@@ -65,6 +65,9 @@ app.use((req, res, next) => {
   // Agar external Vite (5173) chala rahe ho, to backend me Vite middleware mat lagao
   if (process.env.EXTERNAL_VITE !== "true") {
     await setupVite(app);
+  } else {
+    // For external Vite, serve index.html for non-API routes as fallback
+    serveIndexHtmlFallback(app);
   }
 } else {
   serveStatic(app);
