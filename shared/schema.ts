@@ -193,6 +193,25 @@ export interface MembershipCard {
   updatedAt: Date;
 }
 
+export interface MemberCard {
+  id: string;
+  memberId: string;
+  membershipNumber: string;
+  memberName: string;
+  memberEmail: string;
+  memberPhone: string;
+  memberCity?: string | null;
+  memberAddress?: string | null;
+  cardNumber: string;
+  qrCodeUrl?: string | null;
+  cardImageUrl?: string | null;
+  isGenerated: boolean;
+  validFrom: string;
+  validUntil: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Page {
   id: string;
   slug: string;
@@ -459,6 +478,22 @@ export const insertMembershipCardSchema = z.object({
   paymentAmount: z.number().optional(),
 });
 
+export const insertMemberCardSchema = z.object({
+  memberId: z.string(),
+  membershipNumber: z.string(),
+  memberName: z.string(),
+  memberEmail: z.string().email(),
+  memberPhone: z.string(),
+  memberCity: z.string().optional(),
+  memberAddress: z.string().optional(),
+  cardNumber: z.string(),
+  qrCodeUrl: z.string().optional(),
+  cardImageUrl: z.string().optional(),
+  isGenerated: z.boolean().optional(),
+  validFrom: z.string().optional(),
+  validUntil: z.string().optional(),
+});
+
 export const insertPageSchema = z.object({
   slug: z.string(),
   title: z.string(),
@@ -564,6 +599,7 @@ export type InsertContentSection = z.infer<typeof insertContentSectionSchema>;
 export type InsertVolunteerApplication = z.infer<typeof insertVolunteerApplicationSchema>;
 export type InsertFeeStructure = z.infer<typeof insertFeeStructureSchema>;
 export type InsertMembershipCard = z.infer<typeof insertMembershipCardSchema>;
+export type InsertMemberCard = z.infer<typeof insertMemberCardSchema>;
 export type InsertPage = z.infer<typeof insertPageSchema>;
 export type InsertContactInquiry = z.infer<typeof insertContactInquirySchema>;
 export type InsertVolunteerAccount = z.infer<typeof insertVolunteerAccountSchema>;

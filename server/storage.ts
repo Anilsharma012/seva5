@@ -1,10 +1,10 @@
 import {
   Admin, Student, Result, AdmitCard as AdmitCardType, Membership, MenuItem, AdminSetting, PaymentConfig,
-  ContentSection, VolunteerApplication, FeeStructure, MembershipCard, Page, ContactInquiry,
+  ContentSection, VolunteerApplication, FeeStructure, MembershipCard, MemberCard, Page, ContactInquiry,
   VolunteerAccount, PaymentTransaction, TeamMember, Service, GalleryImage,
   InsertAdmin, InsertStudent, InsertResult, InsertAdmitCard, InsertMembership,
   InsertMenuItem, InsertAdminSetting, InsertPaymentConfig, InsertContentSection,
-  InsertVolunteerApplication, InsertFeeStructure, InsertMembershipCard, InsertPage, InsertContactInquiry,
+  InsertVolunteerApplication, InsertFeeStructure, InsertMembershipCard, InsertMemberCard, InsertPage, InsertContactInquiry,
   InsertVolunteerAccount, InsertPaymentTransaction, InsertTeamMember, InsertService, InsertGalleryImage
 } from "@shared/schema";
 import {
@@ -12,7 +12,7 @@ import {
   Membership as MembershipModel, MenuItem as MenuItemModel, AdminSetting as AdminSettingModel,
   PaymentConfig as PaymentConfigModel, ContentSection as ContentSectionModel,
   VolunteerApplication as VolunteerApplicationModel, FeeStructure as FeeStructureModel,
-  MembershipCard as MembershipCardModel, Page as PageModel, ContactInquiry as ContactInquiryModel,
+  MembershipCard as MembershipCardModel, MemberCard as MemberCardModel, Page as PageModel, ContactInquiry as ContactInquiryModel,
   VolunteerAccount as VolunteerAccountModel, PaymentTransaction as PaymentTransactionModel,
   TeamMember as TeamMemberModel, Service as ServiceModel, GalleryImage as GalleryImageModel
 } from "./models";
@@ -97,6 +97,11 @@ export interface IStorage {
   getMembershipCardByMembershipId(membershipId: string): Promise<MembershipCard | undefined>;
   getAllMembershipCards(): Promise<MembershipCard[]>;
   updateMembershipCard(id: string, data: Partial<InsertMembershipCard>): Promise<MembershipCard | undefined>;
+
+  createMemberCard(data: InsertMemberCard): Promise<MemberCard>;
+  getMemberCardByMemberId(memberId: string): Promise<MemberCard | undefined>;
+  getMemberCardById(id: string): Promise<MemberCard | undefined>;
+  updateMemberCard(id: string, data: Partial<InsertMemberCard>): Promise<MemberCard | undefined>;
 
   createPage(data: InsertPage): Promise<Page>;
   getPageBySlug(slug: string): Promise<Page | undefined>;
@@ -418,6 +423,26 @@ export class DatabaseStorage implements IStorage {
   async updateMembershipCard(id: string, data: Partial<InsertMembershipCard>): Promise<MembershipCard | undefined> {
     const card = await MembershipCardModel.findByIdAndUpdate(id, { ...data, updatedAt: new Date() }, { new: true });
     return card ? toPlain<MembershipCard>(card) : undefined;
+  }
+
+  async createMemberCard(data: InsertMemberCard): Promise<MemberCard> {
+    const card = await MemberCardModel.create(data);
+    return toPlain<MemberCard>(card);
+  }
+
+  async getMemberCardByMemberId(memberId: string): Promise<MemberCard | undefined> {
+    const card = await MemberCardModel.findOne({ memberId });
+    return card ? toPlain<MemberCard>(card) : undefined;
+  }
+
+  async getMemberCardById(id: string): Promise<MemberCard | undefined> {
+    const card = await MemberCardModel.findById(id);
+    return card ? toPlain<MemberCard>(card) : undefined;
+  }
+
+  async updateMemberCard(id: string, data: Partial<InsertMemberCard>): Promise<MemberCard | undefined> {
+    const card = await MemberCardModel.findByIdAndUpdate(id, { ...data, updatedAt: new Date() }, { new: true });
+    return card ? toPlain<MemberCard>(card) : undefined;
   }
 
   async createPage(data: InsertPage): Promise<Page> {

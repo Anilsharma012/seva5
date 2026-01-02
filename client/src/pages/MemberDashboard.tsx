@@ -5,7 +5,8 @@ import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, LogOut, Mail, Phone, MapPin, Loader2, Settings, CreditCard, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { Users, LogOut, Mail, Phone, MapPin, Loader2, Settings, CreditCard, CheckCircle, Clock, AlertCircle, CreditCard as ICardIcon } from "lucide-react";
+import MemberICard from "@/components/member/MemberICard";
 
 interface MemberData {
   id: string;
@@ -28,12 +29,34 @@ interface PaymentTransaction {
   purpose?: string;
 }
 
+interface MemberCard {
+  id: string;
+  memberId: string;
+  membershipNumber: string;
+  memberName: string;
+  memberEmail: string;
+  memberPhone: string;
+  memberCity?: string;
+  memberAddress?: string;
+  cardNumber: string;
+  qrCodeUrl?: string;
+  cardImageUrl?: string;
+  isGenerated: boolean;
+  validFrom: string;
+  validUntil: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export default function MemberDashboard() {
   const { user, logout, isMember, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [member, setMember] = useState<MemberData | null>(null);
   const [transactions, setTransactions] = useState<PaymentTransaction[]>([]);
+  const [iCard, setICard] = useState<MemberCard | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [iCardLoading, setICardLoading] = useState(false);
+  const [iCardError, setICardError] = useState<string | undefined>(undefined);
   const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
@@ -47,6 +70,12 @@ export default function MemberDashboard() {
       fetchPaymentTransactions();
     }
   }, [isMember, user, authLoading, navigate]);
+
+  useEffect(() => {
+    if (activeTab === "icard" && user?.id) {
+      fetchMemberICard();
+    }
+  }, [activeTab, user?.id]);
 
   const fetchMemberData = async () => {
     try {
@@ -88,6 +117,31 @@ export default function MemberDashboard() {
       }
     } catch (error) {
       console.error("Error fetching transactions:", error);
+    }
+  };
+
+  const fetchMemberICard = async () => {
+    try {
+      setICardLoading(true);
+      setICardError(undefined);
+      const token = localStorage.getItem("auth_token");
+      const res = await fetch("/api/auth/member/icard", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setICard(data);
+      } else {
+        const error = await res.json();
+        setICardError(error.error || "Failed to load I-Card");
+        setICard(null);
+      }
+    } catch (error) {
+      console.error("Error fetching I-Card:", error);
+      setICardError("Failed to load I-Card. Please try again later.");
+    } finally {
+      setICardLoading(false);
     }
   };
 
@@ -148,6 +202,7 @@ export default function MemberDashboard() {
   const sidebarItems = [
     { id: "dashboard", icon: Users, label: "Dashboard", labelHi: "डैशबोर्ड" },
     { id: "payments", icon: CreditCard, label: "Payment Status", labelHi: "भुगतान स्थिति" },
+    { id: "icard", icon: ICardIcon, label: "I-Card", labelHi: "आई-कार्ड" },
     { id: "settings", icon: Settings, label: "Settings", labelHi: "सेटिंग्स" },
   ];
 
@@ -391,6 +446,14 @@ export default function MemberDashboard() {
                   )}
                 </div>
               </>
+            )}
+
+            {activeTab === "icard" && (
+              <MemberICard
+                iCard={iCard}
+                isLoading={iCardLoading}
+                error={iCardError}
+              />
             )}
 
             {activeTab === "settings" && (

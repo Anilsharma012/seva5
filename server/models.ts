@@ -304,6 +304,25 @@ export interface IMember extends Document {
   membershipNumber?: string;
   isActive: boolean;
   isVerified: boolean;
+  iCardId?: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IMemberCard extends Document {
+  memberId: mongoose.Types.ObjectId;
+  membershipNumber: string;
+  memberName: string;
+  memberEmail: string;
+  memberPhone: string;
+  memberCity?: string;
+  memberAddress?: string;
+  cardNumber: string;
+  qrCodeUrl?: string;
+  cardImageUrl?: string;
+  isGenerated: boolean;
+  validFrom: string;
+  validUntil: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -612,6 +631,29 @@ const MemberSchema = new Schema<IMember>({
   membershipNumber: { type: String, unique: true, sparse: true },
   isActive: { type: Boolean, default: true },
   isVerified: { type: Boolean, default: false },
+  iCardId: { type: Schema.Types.ObjectId, ref: 'MemberCard' },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const MemberCardSchema = new Schema<IMemberCard>({
+  memberId: { type: Schema.Types.ObjectId, ref: 'Member', required: true },
+  membershipNumber: { type: String, required: true },
+  memberName: { type: String, required: true },
+  memberEmail: { type: String, required: true },
+  memberPhone: { type: String, required: true },
+  memberCity: String,
+  memberAddress: String,
+  cardNumber: { type: String, unique: true, required: true },
+  qrCodeUrl: String,
+  cardImageUrl: String,
+  isGenerated: { type: Boolean, default: false },
+  validFrom: { type: String, default: () => new Date().toISOString().split('T')[0] },
+  validUntil: { type: String, default: () => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
+    return date.toISOString().split('T')[0];
+  }},
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
@@ -637,3 +679,4 @@ export const Service = mongoose.model<IService>('Service', ServiceSchema);
 export const GalleryImage = mongoose.model<IGalleryImage>('GalleryImage', GalleryImageSchema);
 export const PasswordResetToken = mongoose.model<IPasswordResetToken>('PasswordResetToken', PasswordResetTokenSchema);
 export const Member = mongoose.model<IMember>('Member', MemberSchema);
+export const MemberCard = mongoose.model<IMemberCard>('MemberCard', MemberCardSchema);
