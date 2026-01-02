@@ -323,7 +323,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.get("/api/results/student/:studentId", authMiddleware, async (req: AuthRequest, res) => {
     try {
       const publishedOnly = req.user?.role !== "admin";
-      const results = await storage.getResultsByStudentId(parseInt(req.params.studentId), publishedOnly);
+      const results = await storage.getResultsByStudentId(req.params.studentId, publishedOnly);
       res.json(results);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch results" });
