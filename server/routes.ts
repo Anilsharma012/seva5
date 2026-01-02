@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { storage } from "./storage";
 import { authMiddleware, adminOnly, generateToken, AuthRequest } from "./middleware/auth";
 import { insertGalleryImageSchema } from "@shared/schema";
@@ -11,7 +12,8 @@ import {
   sendAdminNotificationEmail,
   sendResultNotificationEmail,
   sendAdmitCardNotificationEmail,
-  sendRollNumberNotificationEmail
+  sendRollNumberNotificationEmail,
+  sendPasswordResetEmail
 } from "./email";
 import { Member, PasswordResetToken } from "./models";
 
