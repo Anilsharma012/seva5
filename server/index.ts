@@ -51,11 +51,14 @@ app.use((req, res, next) => {
   await registerRoutes(app);
 
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+    console.error("Global error handler caught:", err);
     const status = (err as { status?: number }).status || (err as { statusCode?: number }).statusCode || 500;
     const message = (err as { message?: string }).message || "Internal Server Error";
 
-    res.status(status).json({ message });
-    throw err;
+    // Only send response if not already sent
+    if (!res.headersSent) {
+      res.status(status).json({ error: message });
+    }
   });
 
  if (process.env.NODE_ENV === "development") {
