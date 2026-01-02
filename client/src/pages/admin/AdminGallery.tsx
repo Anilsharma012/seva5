@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader2, Plus, Trash2, Eye, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { ObjectUploader } from "@/components/ObjectUploader";
 
 interface GalleryImage {
   id: number;
@@ -92,40 +91,93 @@ export default function AdminGallery() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Upload Image</label>
-                  <ObjectUploader
-                    maxFileSize={10485760}
-                    onGetUploadParameters={async (file) => {
-                      const response = await fetch("/api/uploads/request-url", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          name: file.name,
-                          size: file.size,
-                          contentType: file.type,
-                        }),
-                      });
-                      const data = await response.json();
-                      // Capture uploadURL as image URL (presigned URLs work for GET after PUT)
-                      uploadedPathRef.current = data.uploadURL;
-                      return {
-                        method: "PUT",
-                        url: data.uploadURL,
-                        headers: { "Content-Type": file.type || "application/octet-stream" },
-                      };
-                    }}
-                    onComplete={(result) => {
-                      const uploadedFile = result.successful?.[0];
-                      if (uploadedFile && result.successful && result.successful.length > 0) {
-                        // Use the presigned URL captured in ref - it works for reading
-                        const imagePath = uploadedPathRef.current || `/objects/${uploadedFile.name}`;
-                        setNewImage({...newImage, imageUrl: imagePath});
-                        toast({ title: "Success", description: "Image uploaded successfully" });
-                      }
-                    }}
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Choose Image
-                  </ObjectUploader>
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+
+                        setUploading(true);
+                        try {
+                          const token = localStorage.getItem("auth_token");
+
+                          // Step 1: Request upload URL from server
+                          const urlResponse = await fetch("/api/uploads/request-url", {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                              name: file.name,
+                              size: file.size,
+                              contentType: file.type,
+                            }),
+                          });
+
+                          if (!urlResponse.ok) {
+                            const error = await urlResponse.json();
+                            throw new Error(error.error || "Failed to request upload URL");
+                          }
+
+                          const { uploadURL, fileURL } = await urlResponse.json();
+
+                          // Step 2: Upload file with direct fetch PUT
+                          const uploadResponse = await fetch(uploadURL, {
+                            method: "PUT",
+                            headers: {
+                              "Content-Type": file.type || "application/octet-stream",
+                              Authorization: `Bearer ${token}`
+                            },
+                            body: file,
+                          });
+
+                          if (!uploadResponse.ok) {
+                            throw new Error("Failed to upload file");
+                          }
+
+                          // Step 3: Store the fileURL for later use
+                          uploadedPathRef.current = fileURL;
+                          setNewImage({...newImage, imageUrl: fileURL});
+                          toast({ title: "Success", description: "Image uploaded successfully" });
+
+                          // Reset file input
+                          e.target.value = "";
+                        } catch (error) {
+                          console.error("Upload error:", error);
+                          toast({
+                            title: "Error",
+                            description: error instanceof Error ? error.message : "Failed to upload image",
+                            variant: "destructive"
+                          });
+                        } finally {
+                          setUploading(false);
+                        }
+                      }}
+                      disabled={uploading}
+                      className="hidden"
+                      id="gallery-file-input"
+                    />
+                    <Button
+                      onClick={() => document.getElementById("gallery-file-input")?.click()}
+                      disabled={uploading}
+                      variant="outline"
+                    >
+                      {uploading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 mr-2" />
+                          Choose Image
+                        </>
+                      )}
+                    </Button>
+                  </div>
                   {newImage.imageUrl && (
                     <p className="text-sm text-muted-foreground mt-2">
                       Image uploaded: {newImage.imageUrl.split('/').pop()}
