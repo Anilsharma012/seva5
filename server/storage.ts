@@ -1,10 +1,10 @@
 import {
   Admin, Student, Result, AdmitCard as AdmitCardType, Membership, MenuItem, AdminSetting, PaymentConfig,
-  ContentSection, VolunteerApplication, FeeStructure, MembershipCard, Page, ContactInquiry,
+  ContentSection, VolunteerApplication, FeeStructure, MembershipCard, MemberCard, Page, ContactInquiry,
   VolunteerAccount, PaymentTransaction, TeamMember, Service, GalleryImage,
   InsertAdmin, InsertStudent, InsertResult, InsertAdmitCard, InsertMembership,
   InsertMenuItem, InsertAdminSetting, InsertPaymentConfig, InsertContentSection,
-  InsertVolunteerApplication, InsertFeeStructure, InsertMembershipCard, InsertPage, InsertContactInquiry,
+  InsertVolunteerApplication, InsertFeeStructure, InsertMembershipCard, InsertMemberCard, InsertPage, InsertContactInquiry,
   InsertVolunteerAccount, InsertPaymentTransaction, InsertTeamMember, InsertService, InsertGalleryImage
 } from "@shared/schema";
 import {
@@ -12,7 +12,7 @@ import {
   Membership as MembershipModel, MenuItem as MenuItemModel, AdminSetting as AdminSettingModel,
   PaymentConfig as PaymentConfigModel, ContentSection as ContentSectionModel,
   VolunteerApplication as VolunteerApplicationModel, FeeStructure as FeeStructureModel,
-  MembershipCard as MembershipCardModel, Page as PageModel, ContactInquiry as ContactInquiryModel,
+  MembershipCard as MembershipCardModel, MemberCard as MemberCardModel, Page as PageModel, ContactInquiry as ContactInquiryModel,
   VolunteerAccount as VolunteerAccountModel, PaymentTransaction as PaymentTransactionModel,
   TeamMember as TeamMemberModel, Service as ServiceModel, GalleryImage as GalleryImageModel
 } from "./models";
