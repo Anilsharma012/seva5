@@ -141,6 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!res.ok) {
         setIsLoading(false);
+        console.error("Registration API error:", result);
         return { success: false, error: result.error || "Registration failed" };
       }
 
@@ -154,9 +155,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       setIsLoading(false);
       return { success: true, registrationNumber: result.registrationNumber };
-    } catch (error) {
+    } catch (error: any) {
       setIsLoading(false);
-      return { success: false, error: "Network error" };
+      const errorMessage = error?.message || "Network error";
+      console.error("Signup network error:", error);
+      return { success: false, error: errorMessage };
     }
   };
 
