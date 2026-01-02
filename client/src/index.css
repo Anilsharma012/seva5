@@ -118,6 +118,14 @@
     --sidebar-accent-foreground: 0 0% 96%;
     --sidebar-border: 220 15% 22%;
     --sidebar-ring: 0 72% 55%;
+
+    --forest: 142 40% 45%;
+    --forest-light: 142 40% 55%;
+    --terracotta: 16 72% 65%;
+    --saffron: 28 95% 62%;
+    --saffron-light: 28 95% 72%;
+    --saffron-dark: 28 95% 52%;
+    --gold: 45 93% 57%;
   }
 }
 
