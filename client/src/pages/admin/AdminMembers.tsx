@@ -12,7 +12,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import {
-  Users, Search, CheckCircle, XCircle, Clock, Filter, Eye, Loader2, Card as CardIcon
+  Users, Search, CheckCircle, XCircle, Clock, Filter, Eye, Loader2, IdCard
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -377,7 +377,7 @@ export default function AdminMembers() {
                   </>
                 ) : (
                   <>
-                    <CardIcon className="h-4 w-4 mr-2" />
+                    <IdCard className="h-4 w-4 mr-2" />
                     Generate I-Card
                   </>
                 )}

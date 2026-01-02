@@ -49,6 +49,24 @@ export async function setupVite(app: Express) {
   app.use(vite.middlewares);
 }
 
+export function serveIndexHtmlFallback(app: Express) {
+  // For development mode with external Vite - serve index.html for non-API routes
+  const indexPath = path.resolve(rootPath, "client", "index.html");
+
+  if (!fs.existsSync(indexPath)) {
+    log("Warning: client/index.html not found", "express");
+    return;
+  }
+
+  app.use((req, res, next) => {
+    // Skip API routes and static files
+    if (req.path.startsWith("/api") || /\.[a-z]+$/i.test(req.path)) {
+      return next();
+    }
+    res.sendFile(indexPath);
+  });
+}
+
 export function serveStatic(app: Express) {
   if (!fs.existsSync(distPath)) {
     throw new Error(
