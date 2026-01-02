@@ -49,6 +49,10 @@ interface PaymentTransaction {
 interface MemberDetails {
   member: Member;
   transactions: PaymentTransaction[];
+  iCard?: {
+    id: string;
+    cardNumber: string;
+  };
 }
 
 export default function AdminMembers() {
