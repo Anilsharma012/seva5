@@ -331,9 +331,58 @@ export default function AdminMembers() {
                   </div>
                 )}
               </div>
+
+              {selectedMember.member.isVerified && (
+                <div>
+                  <h3 className="font-semibold mb-3">I-Card Status</h3>
+                  {selectedMember.iCard ? (
+                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                      <div className="flex items-start gap-3">
+                        <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-green-900 dark:text-green-200">I-Card Generated</p>
+                          <p className="text-sm text-green-800 dark:text-green-300">Card Number: {selectedMember.iCard.cardNumber}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                      <div className="flex items-start gap-3">
+                        <Clock className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-amber-900 dark:text-amber-200">I-Card Not Generated</p>
+                          <p className="text-sm text-amber-800 dark:text-amber-300">Click the button below to generate the I-Card</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
           <DialogFooter>
+            {selectedMember && selectedMember.member.isVerified && !selectedMember.iCard && (
+              <Button
+                onClick={() => {
+                  const memberId = selectedMember.member._id || selectedMember.member.id;
+                  generateICardMutation.mutate(memberId);
+                }}
+                disabled={generateICardMutation.isPending}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {generateICardMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <CardIcon className="h-4 w-4 mr-2" />
+                    Generate I-Card
+                  </>
+                )}
+              </Button>
+            )}
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
