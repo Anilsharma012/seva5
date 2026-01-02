@@ -114,6 +114,31 @@ export default function MemberDashboard() {
     }
   };
 
+  const fetchMemberICard = async () => {
+    try {
+      setICardLoading(true);
+      setICardError(undefined);
+      const token = localStorage.getItem("auth_token");
+      const res = await fetch("/api/auth/member/icard", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setICard(data);
+      } else {
+        const error = await res.json();
+        setICardError(error.error || "Failed to load I-Card");
+        setICard(null);
+      }
+    } catch (error) {
+      console.error("Error fetching I-Card:", error);
+      setICardError("Failed to load I-Card. Please try again later.");
+    } finally {
+      setICardLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate("/member/login");
