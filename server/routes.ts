@@ -1643,4 +1643,30 @@ export async function registerRoutes(app: Express): Promise<void> {
       res.status(500).json({ error: "Failed to fetch member data" });
     }
   });
+
+  app.get("/api/auth/member/transactions", authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      if (req.user?.role !== "member") {
+        return res.status(403).json({ error: "Only members can access this endpoint" });
+      }
+
+      const { Member } = require('./models');
+      const member = await Member.findById(req.user.id);
+
+      if (!member) {
+        return res.status(404).json({ error: "Member not found" });
+      }
+
+      // Get payment transactions for this member by email
+      const transactions = await storage.getPaymentTransactionsByEmail(member.email);
+
+      // Filter to only membership transactions
+      const membershipTransactions = transactions.filter(t => t.type === "membership");
+
+      res.json(membershipTransactions);
+    } catch (error) {
+      console.error("Error fetching member transactions:", error);
+      res.status(500).json({ error: "Failed to fetch transactions" });
+    }
+  });
 }
