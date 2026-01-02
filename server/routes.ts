@@ -1182,9 +1182,42 @@ export async function registerRoutes(app: Express): Promise<void> {
       }
       const transaction = await storage.updatePaymentTransaction(req.params.id, updates);
       if (!transaction) return res.status(404).json({ error: "Transaction not found" });
-      
+
       // Send approval email if status changed to approved
       if (req.body.status === "approved" && transaction.email) {
+        // Generate I-Card for member if this is a membership payment
+        if (transaction.type === "membership") {
+          const member = await Member.findOne({ email: transaction.email });
+          if (member) {
+            // Check if I-Card already exists
+            let iCard = await storage.getMemberCardByMemberId(member._id.toString());
+
+            if (!iCard) {
+              // Generate card number
+              const count = await MemberCard.countDocuments();
+              const cardNumber = `MWSS-CARD-${String(count + 1).padStart(6, "0")}`;
+
+              // Create I-Card
+              iCard = await storage.createMemberCard({
+                memberId: member._id.toString(),
+                membershipNumber: member.membershipNumber || "",
+                memberName: member.fullName,
+                memberEmail: member.email,
+                memberPhone: member.phone,
+                memberCity: member.city,
+                memberAddress: member.address,
+                cardNumber: cardNumber,
+                isGenerated: true,
+                validFrom: new Date().toISOString().split('T')[0],
+                validUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+              });
+
+              // Update member with iCard reference
+              await Member.findByIdAndUpdate(member._id, { iCardId: iCard.id });
+            }
+          }
+        }
+
         sendApprovalEmail({
           email: transaction.email,
           name: transaction.name || "User",
@@ -1196,9 +1229,10 @@ export async function registerRoutes(app: Express): Promise<void> {
           },
         }).catch(err => console.error("Payment approval email error:", err));
       }
-      
+
       res.json(transaction);
     } catch (error) {
+      console.error("Payment update error:", error);
       res.status(500).json({ error: "Failed to update transaction" });
     }
   });
