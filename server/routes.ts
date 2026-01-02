@@ -91,16 +91,20 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   app.post("/api/auth/student/register", async (req, res) => {
+    let responseSent = false;
+
     try {
       const { email, password, fullName, phone, fatherName, motherName, address, city, pincode, dateOfBirth, gender, class: studentClass, feeLevel } = req.body;
 
       // Validation
       if (!email || !password || !fullName || !studentClass) {
+        responseSent = true;
         return res.status(400).json({ error: "Missing required fields: email, password, fullName, class" });
       }
 
       const existing = await storage.getStudentByEmail(email);
       if (existing) {
+        responseSent = true;
         return res.status(400).json({ error: "Email already registered" });
       }
 
@@ -130,7 +134,17 @@ export async function registerRoutes(app: Express): Promise<void> {
         feeAmount,
       });
 
+      if (!student || !student.id) {
+        throw new Error("Failed to create student record");
+      }
+
       const token = generateToken({ id: student.id.toString(), email: student.email, role: "student", name: student.fullName });
+
+      const responseData = {
+        token,
+        user: { id: student.id, email: student.email, role: "student", name: student.fullName },
+        registrationNumber
+      };
 
       // Send email notifications (non-blocking)
       sendStudentRegistrationEmail({
@@ -153,11 +167,20 @@ export async function registerRoutes(app: Express): Promise<void> {
         },
       }).catch(err => console.error("Admin notification email error:", err));
 
-      res.status(201).json({ token, user: { id: student.id, email: student.email, role: "student", name: student.fullName }, registrationNumber });
+      responseSent = true;
+      res.status(201).json(responseData);
     } catch (error: any) {
-      console.error("Registration error:", error);
-      const errorMessage = error?.message || "Registration failed";
-      res.status(500).json({ error: errorMessage });
+      console.error("Registration error details:", error);
+      if (!responseSent) {
+        responseSent = true;
+        const errorMessage = error?.message || "Registration failed";
+        try {
+          res.status(500).json({ error: errorMessage });
+        } catch (sendErr) {
+          console.error("Failed to send error response:", sendErr);
+          res.status(500).end();
+        }
+      }
     }
   });
 
