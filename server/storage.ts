@@ -425,6 +425,26 @@ export class DatabaseStorage implements IStorage {
     return card ? toPlain<MembershipCard>(card) : undefined;
   }
 
+  async createMemberCard(data: InsertMemberCard): Promise<MemberCard> {
+    const card = await MemberCardModel.create(data);
+    return toPlain<MemberCard>(card);
+  }
+
+  async getMemberCardByMemberId(memberId: string): Promise<MemberCard | undefined> {
+    const card = await MemberCardModel.findOne({ memberId });
+    return card ? toPlain<MemberCard>(card) : undefined;
+  }
+
+  async getMemberCardById(id: string): Promise<MemberCard | undefined> {
+    const card = await MemberCardModel.findById(id);
+    return card ? toPlain<MemberCard>(card) : undefined;
+  }
+
+  async updateMemberCard(id: string, data: Partial<InsertMemberCard>): Promise<MemberCard | undefined> {
+    const card = await MemberCardModel.findByIdAndUpdate(id, { ...data, updatedAt: new Date() }, { new: true });
+    return card ? toPlain<MemberCard>(card) : undefined;
+  }
+
   async createPage(data: InsertPage): Promise<Page> {
     const page = await PageModel.create(data);
     return toPlain<Page>(page);
