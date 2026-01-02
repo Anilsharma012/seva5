@@ -478,6 +478,22 @@ export const insertMembershipCardSchema = z.object({
   paymentAmount: z.number().optional(),
 });
 
+export const insertMemberCardSchema = z.object({
+  memberId: z.string(),
+  membershipNumber: z.string(),
+  memberName: z.string(),
+  memberEmail: z.string().email(),
+  memberPhone: z.string(),
+  memberCity: z.string().optional(),
+  memberAddress: z.string().optional(),
+  cardNumber: z.string(),
+  qrCodeUrl: z.string().optional(),
+  cardImageUrl: z.string().optional(),
+  isGenerated: z.boolean().optional(),
+  validFrom: z.string().optional(),
+  validUntil: z.string().optional(),
+});
+
 export const insertPageSchema = z.object({
   slug: z.string(),
   title: z.string(),
