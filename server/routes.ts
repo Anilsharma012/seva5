@@ -374,7 +374,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         const admitCards = await storage.getAllAdmitCards();
         res.json(admitCards);
       } else {
-        const admitCards = await storage.getAdmitCardsByStudentId(parseInt(req.user?.id || "0"));
+        const admitCards = await storage.getAdmitCardsByStudentId(req.user?.id || "");
         res.json(admitCards);
       }
     } catch (error) {
