@@ -477,9 +477,9 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.get("/api/my-transactions", authMiddleware, async (req: AuthRequest, res) => {
     try {
       let email = "";
-      
+
       if (req.user?.role === "student") {
-        const student = await storage.getStudentById(parseInt(req.user.id));
+        const student = await storage.getStudentById(req.user.id);
         if (student) email = student.email;
       } else if (req.user?.role === "volunteer") {
         const volunteer = await storage.getVolunteerAccountById(parseInt(req.user.id));
