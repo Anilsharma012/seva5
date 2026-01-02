@@ -11,10 +11,10 @@ export default defineConfig(({ mode }) => ({
     strictPort: true,
     allowedHosts: true,
 
-    // ✅ Frontend (5173) se /api requests backend (5000) par bhej do
+    // ✅ Frontend (5173) se /api requests backend (5011) par bhej do
     proxy: {
       "/api": {
-        target: "http://localhost:5000",
+        target: "http://localhost:5011",
         changeOrigin: true,
         secure: false,
         ws: true,
