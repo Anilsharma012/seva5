@@ -312,7 +312,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         const results = await storage.getAllResults();
         res.json(results);
       } else {
-        const results = await storage.getResultsByStudentId(parseInt(req.user?.id || "0"), true);
+        const results = await storage.getResultsByStudentId(req.user?.id || "", true);
         res.json(results);
       }
     } catch (error) {
