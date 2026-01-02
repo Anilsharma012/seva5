@@ -69,6 +69,7 @@ const iconMap: Record<string, LucideIcon> = {
 const fallbackMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin/dashboard" },
   { icon: GraduationCap, label: "Students", href: "/admin/students" },
+  { icon: Users, label: "Members", href: "/admin/members" },
   { icon: FileText, label: "Roll Numbers", href: "/admin/roll-numbers" },
   { icon: Award, label: "Results", href: "/admin/results" },
   { icon: IdCard, label: "Admit Cards", href: "/admin/admit-cards" },

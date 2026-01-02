@@ -303,6 +303,7 @@ export interface IMember extends Document {
   membershipType: string;
   membershipNumber?: string;
   isActive: boolean;
+  isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -610,6 +611,7 @@ const MemberSchema = new Schema<IMember>({
   membershipType: { type: String, default: 'regular' },
   membershipNumber: { type: String, unique: true, sparse: true },
   isActive: { type: Boolean, default: true },
+  isVerified: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

@@ -36,6 +36,7 @@ import AdminRollNumbers from "./pages/admin/AdminRollNumbers";
 import AdminResults from "./pages/admin/AdminResults";
 import AdminAdmitCards from "./pages/admin/AdminAdmitCards";
 import AdminFees from "./pages/admin/AdminFees";
+import AdminMembers from "./pages/admin/AdminMembers";
 import AdminMemberships from "./pages/admin/AdminMemberships";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminVolunteers from "./pages/admin/AdminVolunteers";
@@ -88,6 +89,7 @@ const App = () => (
             {/* Admin Dashboard */}
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/students" element={<AdminStudents />} />
+            <Route path="/admin/members" element={<AdminMembers />} />
             <Route path="/admin/roll-numbers" element={<AdminRollNumbers />} />
             <Route path="/admin/results" element={<AdminResults />} />
             <Route path="/admin/admit-cards" element={<AdminAdmitCards />} />

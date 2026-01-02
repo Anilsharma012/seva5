@@ -1513,6 +1513,11 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(403).json({ error: "Account is deactivated" });
       }
 
+      // Check if member is verified by admin
+      if (!member.isVerified) {
+        return res.status(403).json({ error: "Account pending admin verification. Please wait for approval. / खाता व्यवस्थापक सत्यापन की प्रतीक्षा में है।" });
+      }
+
       const isValid = await bcrypt.compare(password, member.password);
       if (!isValid) {
         return res.status(401).json({ error: "Invalid credentials" });
@@ -1659,6 +1664,83 @@ export async function registerRoutes(app: Express): Promise<void> {
     } catch (error) {
       console.error("Error fetching member transactions:", error);
       res.status(500).json({ error: "Failed to fetch transactions" });
+    }
+  });
+
+  // ============ ADMIN MEMBER MANAGEMENT ROUTES ============
+  app.get("/api/admin/members", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const members = await Member.find().sort({ createdAt: -1 });
+      const membersWithoutPassword = members.map(m => {
+        const obj = m.toObject();
+        delete obj.password;
+        return obj;
+      });
+      res.json(membersWithoutPassword);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch members" });
+    }
+  });
+
+  app.get("/api/admin/members/:id", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const member = await Member.findById(req.params.id);
+      if (!member) {
+        return res.status(404).json({ error: "Member not found" });
+      }
+
+      // Get payment transactions for this member
+      const transactions = await storage.getPaymentTransactionsByEmail(member.email);
+
+      const memberObj = member.toObject();
+      delete memberObj.password;
+
+      res.json({
+        member: memberObj,
+        transactions: transactions
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch member details" });
+    }
+  });
+
+  app.patch("/api/admin/members/:id", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const { isVerified, adminNotes } = req.body;
+
+      const member = await Member.findByIdAndUpdate(
+        req.params.id,
+        {
+          ...(isVerified !== undefined && { isVerified }),
+          updatedAt: new Date()
+        },
+        { new: true }
+      );
+
+      if (!member) {
+        return res.status(404).json({ error: "Member not found" });
+      }
+
+      // Send approval email if verified
+      if (isVerified === true && member.email) {
+        sendApprovalEmail({
+          email: member.email,
+          name: member.fullName,
+          type: "member",
+          details: {
+            "Membership Number": member.membershipNumber || "N/A",
+            "Email / ईमेल": member.email,
+            "Phone / फोन": member.phone || "N/A"
+          }
+        }).catch(err => console.error("Member approval email error:", err));
+      }
+
+      const memberObj = member.toObject();
+      delete memberObj.password;
+
+      res.json(memberObj);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update member" });
     }
   });
 }

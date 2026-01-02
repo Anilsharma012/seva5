@@ -4,6 +4,7 @@ import { storage } from "./storage";
 const defaultMenuItems = [
   { title: "Dashboard", titleHindi: "डैशबोर्ड", path: "/admin/dashboard", iconKey: "LayoutDashboard", order: 1, group: "main" },
   { title: "Students", titleHindi: "छात्र", path: "/admin/students", iconKey: "GraduationCap", order: 2, group: "main" },
+  { title: "Members", titleHindi: "सदस्य", path: "/admin/members", iconKey: "Users", order: 2.5, group: "main" },
   { title: "Roll Numbers", titleHindi: "रोल नंबर", path: "/admin/roll-numbers", iconKey: "FileText", order: 3, group: "main" },
   { title: "Results", titleHindi: "परिणाम", path: "/admin/results", iconKey: "Award", order: 4, group: "main" },
   { title: "Admit Cards", titleHindi: "प्रवेश पत्र", path: "/admin/admit-cards", iconKey: "IdCard", order: 5, group: "main" },
@@ -13,7 +14,8 @@ const defaultMenuItems = [
   { title: "Gallery", titleHindi: "गैलरी", path: "/admin/gallery", iconKey: "Images", order: 9, group: "main" },
   { title: "Content", titleHindi: "सामग्री", path: "/admin/content", iconKey: "FileEdit", order: 10, group: "main" },
   { title: "Pages", titleHindi: "पृष्ठ", path: "/admin/pages", iconKey: "Layout", order: 11, group: "main" },
-  { title: "Payments", titleHindi: "भुगतान", path: "/admin/payments", iconKey: "Wallet", order: 12, group: "main" },
+  { title: "Transactions", titleHindi: "लेनदेन", path: "/admin/transactions", iconKey: "Receipt", order: 12, group: "main" },
+  { title: "Payments", titleHindi: "भुगतान", path: "/admin/payments", iconKey: "Wallet", order: 13, group: "main" },
   { title: "Settings", titleHindi: "सेटिंग्स", path: "/admin/settings", iconKey: "Settings", order: 100, group: "system" },
 ];
 
