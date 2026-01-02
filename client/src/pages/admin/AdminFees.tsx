@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, Search, Check } from "lucide-react";
+import { CreditCard, Search, Check, X } from "lucide-react";
 
 const feeLevels = [
   { id: "village", name: "Village Level", amount: 99 },
@@ -17,6 +18,7 @@ const feeLevels = [
 
 interface Student {
   id: number;
+  email?: string;
   registrationNumber: string;
   fullName: string;
   feeLevel: string;
@@ -24,11 +26,31 @@ interface Student {
   feePaid: boolean;
 }
 
+interface PaymentTransaction {
+  id: string;
+  type: string;
+  name: string;
+  email?: string;
+  phone: string;
+  amount: number;
+  transactionId: string;
+  paymentMethod?: string;
+  purpose?: string;
+  status: string;
+  createdAt: string;
+  approvedAt?: string;
+  approvedBy?: string;
+}
+
 export default function AdminFees() {
   const [students, setStudents] = useState<Student[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [transactions, setTransactions] = useState<PaymentTransaction[]>([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -53,14 +75,42 @@ export default function AdminFees() {
     }
   };
 
-  const handleVerifyPayment = async (studentId: string) => {
+  const openVerifyModal = async (student: Student) => {
+    setSelectedStudent(student);
+    setLoadingTransactions(true);
     try {
       const token = localStorage.getItem("auth_token");
-      const res = await fetch(`/api/students/${studentId}`, {
+      const res = await fetch(`/api/admin/payment-transactions`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const allTransactions = await res.json();
+        const studentTransactions = allTransactions.filter(
+          (t: PaymentTransaction) =>
+            (student.email && t.email === student.email) ||
+            t.name === student.fullName ||
+            t.type === 'fee'
+        );
+        setTransactions(studentTransactions);
+      }
+    } catch (error) {
+      console.error("Error loading transactions:", error);
+      toast({ title: "Error", description: "Failed to load payment details" });
+    } finally {
+      setLoadingTransactions(false);
+    }
+  };
+
+  const confirmVerifyPayment = async () => {
+    if (!selectedStudent) return;
+    setVerifyingPayment(true);
+    try {
+      const token = localStorage.getItem("auth_token");
+      const res = await fetch(`/api/students/${selectedStudent.id}`, {
         method: "PATCH",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` 
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           feePaid: true,
@@ -71,11 +121,16 @@ export default function AdminFees() {
       if (!res.ok) throw new Error("Failed to verify");
 
       setStudents(students.map(s =>
-        s.id === studentId ? { ...s, feePaid: true } : s
+        s.id === selectedStudent.id ? { ...s, feePaid: true } : s
       ));
       toast({ title: "Payment Verified", description: "भुगतान सत्यापित" });
+      setSelectedStudent(null);
+      setTransactions([]);
     } catch (error) {
       console.error("Error verifying payment:", error);
+      toast({ title: "Error", description: "Failed to verify payment" });
+    } finally {
+      setVerifyingPayment(false);
     }
   };
 
@@ -230,7 +285,7 @@ export default function AdminFees() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => handleVerifyPayment(student.id)}
+                              onClick={() => openVerifyModal(student)}
                               data-testid={`button-verify-${student.id}`}
                             >
                               <Check className="h-4 w-4 mr-1" />
@@ -247,6 +302,126 @@ export default function AdminFees() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={!!selectedStudent} onOpenChange={(open) => !open && setSelectedStudent(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Verify Payment - {selectedStudent?.fullName}</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4 p-4 bg-slate-50 rounded-lg">
+              <div>
+                <p className="text-xs text-muted-foreground font-semibold">Registration Number</p>
+                <p className="text-lg font-bold">{selectedStudent?.registrationNumber}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground font-semibold">Fee Level</p>
+                <p className="text-lg font-bold">{selectedStudent?.feeLevel}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground font-semibold">Fee Amount</p>
+                <p className="text-lg font-bold text-green-600">Rs.{selectedStudent?.feeAmount || 99}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground font-semibold">Status</p>
+                <p className="text-lg font-bold text-orange-600">Pending</p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-base mb-3">Payment Transactions ({transactions.length})</h3>
+
+              {loadingTransactions ? (
+                <p className="text-center py-8 text-muted-foreground">Loading payment details...</p>
+              ) : transactions.length === 0 ? (
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-800">
+                    No payment transactions found for this student. You can still manually verify the payment.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {transactions.map((transaction) => (
+                    <div key={transaction.id} className="border rounded-lg p-4 space-y-2 hover:bg-slate-50 transition">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-xs text-muted-foreground font-semibold">Transaction ID</p>
+                          <p className="font-mono text-sm font-semibold">{transaction.transactionId}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground font-semibold">Status</p>
+                          <p className={`text-sm font-semibold ${
+                            transaction.status === 'approved' ? 'text-green-600' :
+                            transaction.status === 'rejected' ? 'text-red-600' :
+                            'text-amber-600'
+                          }`}>
+                            {transaction.status?.charAt(0).toUpperCase() + transaction.status?.slice(1)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground font-semibold">Amount</p>
+                          <p className="font-bold text-lg">Rs.{transaction.amount}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground font-semibold">Payment Method</p>
+                          <p className="text-sm font-semibold">{transaction.paymentMethod || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground font-semibold">Type</p>
+                          <p className="text-sm font-semibold capitalize">{transaction.type}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground font-semibold">Phone</p>
+                          <p className="text-sm font-semibold">{transaction.phone}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground font-semibold">Purpose</p>
+                          <p className="text-sm">{transaction.purpose || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground font-semibold">Date</p>
+                          <p className="text-sm">{new Date(transaction.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        {transaction.email && (
+                          <div>
+                            <p className="text-xs text-muted-foreground font-semibold">Email</p>
+                            <p className="text-sm">{transaction.email}</p>
+                          </div>
+                        )}
+                        {transaction.approvedAt && (
+                          <div>
+                            <p className="text-xs text-muted-foreground font-semibold">Approved At</p>
+                            <p className="text-sm">{new Date(transaction.approvedAt).toLocaleDateString()}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setSelectedStudent(null)}
+              disabled={verifyingPayment}
+            >
+              <X className="h-4 w-4 mr-2" />
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmVerifyPayment}
+              disabled={verifyingPayment}
+            >
+              <Check className="h-4 w-4 mr-2" />
+              {verifyingPayment ? "Verifying..." : "Confirm Verification"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
