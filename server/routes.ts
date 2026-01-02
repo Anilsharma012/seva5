@@ -482,12 +482,12 @@ export async function registerRoutes(app: Express): Promise<void> {
         const student = await storage.getStudentById(req.user.id);
         if (student) email = student.email;
       } else if (req.user?.role === "volunteer") {
-        const volunteer = await storage.getVolunteerAccountById(parseInt(req.user.id));
+        const volunteer = await storage.getVolunteerAccountById(req.user.id);
         if (volunteer) email = volunteer.email;
       }
-      
+
       if (!email) return res.json([]);
-      
+
       const transactions = await storage.getPaymentTransactionsByEmail(email);
       res.json(transactions);
     } catch (error) {
