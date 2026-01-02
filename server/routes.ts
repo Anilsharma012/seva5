@@ -93,19 +93,24 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.post("/api/auth/student/register", async (req, res) => {
     try {
       const { email, password, fullName, phone, fatherName, motherName, address, city, pincode, dateOfBirth, gender, class: studentClass, feeLevel } = req.body;
-      
+
+      // Validation
+      if (!email || !password || !fullName || !studentClass) {
+        return res.status(400).json({ error: "Missing required fields: email, password, fullName, class" });
+      }
+
       const existing = await storage.getStudentByEmail(email);
       if (existing) {
         return res.status(400).json({ error: "Email already registered" });
       }
-      
+
       const year = new Date().getFullYear();
       const count = await storage.countStudentsWithRegPrefix(`MWSS${year}`);
       const registrationNumber = `MWSS${year}${String(count + 1).padStart(4, "0")}`;
-      
+
       const feeAmounts: Record<string, number> = { village: 99, block: 199, district: 299, haryana: 399 };
       const feeAmount = feeAmounts[feeLevel] || 99;
-      
+
       const hashedPassword = await bcrypt.hash(password, 10);
       const student = await storage.createStudent({
         email,
@@ -124,10 +129,10 @@ export async function registerRoutes(app: Express): Promise<void> {
         feeLevel: feeLevel || "village",
         feeAmount,
       });
-      
+
       const token = generateToken({ id: student.id.toString(), email: student.email, role: "student", name: student.fullName });
-      
-      // Send email notifications
+
+      // Send email notifications (non-blocking)
       sendStudentRegistrationEmail({
         email: student.email,
         fullName: student.fullName,
@@ -135,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         fatherName: fatherName || "",
         phone: student.phone || "",
       }).catch(err => console.error("Student registration email error:", err));
-      
+
       sendAdminNotificationEmail({
         type: "Student Registration",
         name: student.fullName,
@@ -147,11 +152,12 @@ export async function registerRoutes(app: Express): Promise<void> {
           "Amount": `Rs. ${feeAmount}`,
         },
       }).catch(err => console.error("Admin notification email error:", err));
-      
+
       res.status(201).json({ token, user: { id: student.id, email: student.email, role: "student", name: student.fullName }, registrationNumber });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Registration error:", error);
-      res.status(500).json({ error: "Registration failed" });
+      const errorMessage = error?.message || "Registration failed";
+      res.status(500).json({ error: errorMessage });
     }
   });
 
