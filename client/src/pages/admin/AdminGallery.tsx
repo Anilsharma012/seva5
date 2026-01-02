@@ -95,9 +95,13 @@ export default function AdminGallery() {
                   <ObjectUploader
                     maxFileSize={10485760}
                     onGetUploadParameters={async (file) => {
+                      const token = localStorage.getItem("auth_token");
                       const response = await fetch("/api/uploads/request-url", {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${token}`
+                        },
                         body: JSON.stringify({
                           name: file.name,
                           size: file.size,
