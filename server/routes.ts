@@ -3,9 +3,9 @@ import bcrypt from "bcryptjs";
 import { storage } from "./storage";
 import { authMiddleware, adminOnly, generateToken, AuthRequest } from "./middleware/auth";
 import { insertGalleryImageSchema } from "@shared/schema";
-import { 
-  sendStudentRegistrationEmail, 
-  sendVolunteerRegistrationEmail, 
+import {
+  sendStudentRegistrationEmail,
+  sendVolunteerRegistrationEmail,
   sendPaymentConfirmationEmail,
   sendApprovalEmail,
   sendAdminNotificationEmail,
@@ -13,6 +13,7 @@ import {
   sendAdmitCardNotificationEmail,
   sendRollNumberNotificationEmail
 } from "./email";
+import { Member, PasswordResetToken } from "./models";
 
 export async function registerRoutes(app: Express): Promise<void> {
   
