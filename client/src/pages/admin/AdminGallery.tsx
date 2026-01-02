@@ -108,6 +108,13 @@ export default function AdminGallery() {
                           contentType: file.type,
                         }),
                       });
+
+                      if (!response.ok) {
+                        const error = await response.json();
+                        toast({ title: "Error", description: error.error || "Failed to request upload URL", variant: "destructive" });
+                        throw new Error(error.error || "Failed to request upload URL");
+                      }
+
                       const data = await response.json();
                       // Capture fileURL for storing in database (for displaying images)
                       uploadedPathRef.current = data.fileURL;
