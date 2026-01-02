@@ -233,7 +233,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       if (!student) {
         return res.status(404).json({ error: "Student not found" });
       }
-      if (req.user?.role !== "admin" && req.user?.id !== student.id.toString()) {
+      if (req.user?.role !== "admin" && req.user?.id !== student.id) {
         return res.status(403).json({ error: "Forbidden" });
       }
       const { password, ...studentData } = student;
