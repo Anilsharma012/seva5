@@ -609,9 +609,10 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.get("/api/public/payment-config/:type", async (req, res) => {
     try {
       const configs = await storage.getPaymentConfigsByType(req.params.type);
-      res.json(configs);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch payment config" });
+      res.json(configs || []);
+    } catch (error: any) {
+      console.error("Payment config fetch error:", error);
+      res.status(500).json({ error: error?.message || "Failed to fetch payment config" });
     }
   });
 
