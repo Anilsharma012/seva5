@@ -193,6 +193,25 @@ export interface MembershipCard {
   updatedAt: Date;
 }
 
+export interface MemberCard {
+  id: string;
+  memberId: string;
+  membershipNumber: string;
+  memberName: string;
+  memberEmail: string;
+  memberPhone: string;
+  memberCity?: string | null;
+  memberAddress?: string | null;
+  cardNumber: string;
+  qrCodeUrl?: string | null;
+  cardImageUrl?: string | null;
+  isGenerated: boolean;
+  validFrom: string;
+  validUntil: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Page {
   id: string;
   slug: string;
