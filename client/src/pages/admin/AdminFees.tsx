@@ -80,13 +80,16 @@ export default function AdminFees() {
     setLoadingTransactions(true);
     try {
       const token = localStorage.getItem("auth_token");
-      const res = await fetch(`/api/my-transactions`, {
+      const res = await fetch(`/api/admin/payment-transactions`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
         const allTransactions = await res.json();
         const studentTransactions = allTransactions.filter(
-          (t: PaymentTransaction) => t.email === student.email || t.name === student.fullName
+          (t: PaymentTransaction) =>
+            (student.email && t.email === student.email) ||
+            t.name === student.fullName ||
+            t.type === 'fee'
         );
         setTransactions(studentTransactions);
       }
