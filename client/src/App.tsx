@@ -36,6 +36,7 @@ import AdminRollNumbers from "./pages/admin/AdminRollNumbers";
 import AdminResults from "./pages/admin/AdminResults";
 import AdminAdmitCards from "./pages/admin/AdminAdmitCards";
 import AdminFees from "./pages/admin/AdminFees";
+import AdminMembers from "./pages/admin/AdminMembers";
 import AdminMemberships from "./pages/admin/AdminMemberships";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminVolunteers from "./pages/admin/AdminVolunteers";
