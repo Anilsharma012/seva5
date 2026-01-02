@@ -1519,6 +1519,14 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
+      // Check if member has approved payment transaction
+      const transactions = await storage.getPaymentTransactionsByEmail(email);
+      const hasApprovedPayment = transactions.some(t => t.status === "approved" && t.type === "membership");
+
+      if (!hasApprovedPayment) {
+        return res.status(403).json({ error: "Payment pending approval. Please wait for admin approval. / भुगतान स्वीकृति लंबित है।" });
+      }
+
       const token = generateToken({ id: member._id.toString(), email: member.email, role: "member", name: member.fullName });
       const { password: _, ...memberData } = member.toObject();
 
