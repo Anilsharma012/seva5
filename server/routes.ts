@@ -1374,11 +1374,10 @@ export async function registerRoutes(app: Express): Promise<void> {
       }
 
       // Generate reset token
-      const resetToken = require('crypto').randomBytes(32).toString('hex');
+      const resetToken = crypto.randomBytes(32).toString('hex');
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
       // Save reset token to database
-      const { PasswordResetToken } = require('./models');
       await PasswordResetToken.create({
         userId: student.id,
         userType: 'student',
@@ -1391,7 +1390,6 @@ export async function registerRoutes(app: Express): Promise<void> {
       const resetLink = `${process.env.PUBLIC_BASE_URL}/student/reset-password?token=${resetToken}`;
 
       // Send email
-      const { sendPasswordResetEmail } = require('./email');
       await sendPasswordResetEmail({
         email: student.email,
         name: student.fullName,
