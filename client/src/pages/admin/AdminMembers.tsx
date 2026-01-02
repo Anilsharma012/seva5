@@ -83,6 +83,24 @@ export default function AdminMembers() {
     },
   });
 
+  const generateICardMutation = useMutation({
+    mutationFn: async (memberId: string) => {
+      return apiRequest("POST", `/api/admin/members/${memberId}/generate-icard`, {});
+    },
+    onSuccess: (data) => {
+      if (selectedMember) {
+        setSelectedMember({
+          ...selectedMember,
+          iCard: data.iCard
+        });
+      }
+      toast({ title: "Success", description: "I-Card generated successfully" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to generate I-Card", variant: "destructive" });
+    },
+  });
+
   const filteredMembers = members.filter((m) => {
     const matchesSearch = 
       m.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
