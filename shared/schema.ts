@@ -599,6 +599,7 @@ export type InsertContentSection = z.infer<typeof insertContentSectionSchema>;
 export type InsertVolunteerApplication = z.infer<typeof insertVolunteerApplicationSchema>;
 export type InsertFeeStructure = z.infer<typeof insertFeeStructureSchema>;
 export type InsertMembershipCard = z.infer<typeof insertMembershipCardSchema>;
+export type InsertMemberCard = z.infer<typeof insertMemberCardSchema>;
 export type InsertPage = z.infer<typeof insertPageSchema>;
 export type InsertContactInquiry = z.infer<typeof insertContactInquirySchema>;
 export type InsertVolunteerAccount = z.infer<typeof insertVolunteerAccountSchema>;
