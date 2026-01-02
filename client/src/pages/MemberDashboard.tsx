@@ -119,8 +119,35 @@ export default function MemberDashboard() {
     );
   }
 
+  const getPaymentStatusIcon = (status: string) => {
+    switch (status) {
+      case "approved":
+        return <CheckCircle className="h-5 w-5 text-green-600" />;
+      case "pending":
+        return <Clock className="h-5 w-5 text-orange-600" />;
+      case "rejected":
+        return <AlertCircle className="h-5 w-5 text-red-600" />;
+      default:
+        return <CreditCard className="h-5 w-5 text-gray-600" />;
+    }
+  };
+
+  const getPaymentStatusBadge = (status: string) => {
+    switch (status) {
+      case "approved":
+        return <Badge className="bg-green-500">Approved</Badge>;
+      case "pending":
+        return <Badge className="bg-orange-500">Pending</Badge>;
+      case "rejected":
+        return <Badge className="bg-red-500">Rejected</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
   const sidebarItems = [
     { id: "dashboard", icon: Users, label: "Dashboard", labelHi: "डैशबोर्ड" },
+    { id: "payments", icon: CreditCard, label: "Payment Status", labelHi: "भुगतान स्थिति" },
     { id: "settings", icon: Settings, label: "Settings", labelHi: "सेटिंग्स" },
   ];
 
