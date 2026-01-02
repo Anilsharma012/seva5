@@ -1052,12 +1052,17 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.post("/api/public/payment-transaction", async (req, res) => {
     try {
       const { type, name, email, phone, amount, transactionId, paymentMethod, purpose, fatherName, address, city, state, pincode, membershipLevel, photoUrl } = req.body;
-      
+
+      // Validation
+      if (!type || !name || !phone || !amount || !transactionId) {
+        return res.status(400).json({ error: "Missing required fields: type, name, phone, amount, transactionId" });
+      }
+
       const existingTransaction = await storage.getPaymentTransactionByTransactionId(transactionId);
       if (existingTransaction) {
         return res.status(400).json({ error: "Transaction ID already exists" });
       }
-      
+
       const transaction = await storage.createPaymentTransaction({
         type,
         name,
@@ -1075,8 +1080,8 @@ export async function registerRoutes(app: Express): Promise<void> {
         membershipLevel,
         photoUrl,
       });
-      
-      // Send email notifications
+
+      // Send email notifications (non-blocking)
       if (email) {
         sendPaymentConfirmationEmail({
           email,
@@ -1087,7 +1092,7 @@ export async function registerRoutes(app: Express): Promise<void> {
           purpose,
         }).catch(err => console.error("Payment confirmation email error:", err));
       }
-      
+
       sendAdminNotificationEmail({
         type: `Payment (${type || "Unknown"})`,
         name: name || "Unknown",
@@ -1100,15 +1105,16 @@ export async function registerRoutes(app: Express): Promise<void> {
           "Purpose": purpose || "N/A",
         },
       }).catch(err => console.error("Admin payment notification error:", err));
-      
-      res.status(201).json({ 
-        success: true, 
+
+      res.status(201).json({
+        success: true,
         message: "Payment submitted successfully! Please wait for admin approval. / भुगतान सफलतापूर्वक जमा हुआ! कृपया व्यवस्थापक की मंजूरी की प्रतीक्षा करें।",
         transaction: { id: transaction.id, status: transaction.status }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Payment transaction error:", error);
-      res.status(500).json({ error: "Failed to submit payment" });
+      const errorMessage = error?.message || "Failed to submit payment";
+      res.status(500).json({ error: errorMessage });
     }
   });
 
