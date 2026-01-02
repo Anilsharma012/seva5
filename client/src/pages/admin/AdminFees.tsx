@@ -74,14 +74,39 @@ export default function AdminFees() {
     }
   };
 
-  const handleVerifyPayment = async (studentId: string) => {
+  const openVerifyModal = async (student: Student) => {
+    setSelectedStudent(student);
+    setLoadingTransactions(true);
     try {
       const token = localStorage.getItem("auth_token");
-      const res = await fetch(`/api/students/${studentId}`, {
+      const res = await fetch(`/api/my-transactions`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const allTransactions = await res.json();
+        const studentTransactions = allTransactions.filter(
+          (t: PaymentTransaction) => t.email === student.email || t.name === student.fullName
+        );
+        setTransactions(studentTransactions);
+      }
+    } catch (error) {
+      console.error("Error loading transactions:", error);
+      toast({ title: "Error", description: "Failed to load payment details" });
+    } finally {
+      setLoadingTransactions(false);
+    }
+  };
+
+  const confirmVerifyPayment = async () => {
+    if (!selectedStudent) return;
+    setVerifyingPayment(true);
+    try {
+      const token = localStorage.getItem("auth_token");
+      const res = await fetch(`/api/students/${selectedStudent.id}`, {
         method: "PATCH",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` 
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           feePaid: true,
@@ -92,11 +117,16 @@ export default function AdminFees() {
       if (!res.ok) throw new Error("Failed to verify");
 
       setStudents(students.map(s =>
-        s.id === studentId ? { ...s, feePaid: true } : s
+        s.id === selectedStudent.id ? { ...s, feePaid: true } : s
       ));
       toast({ title: "Payment Verified", description: "भुगतान सत्यापित" });
+      setSelectedStudent(null);
+      setTransactions([]);
     } catch (error) {
       console.error("Error verifying payment:", error);
+      toast({ title: "Error", description: "Failed to verify payment" });
+    } finally {
+      setVerifyingPayment(false);
     }
   };
 
