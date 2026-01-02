@@ -29,6 +29,25 @@ interface PaymentTransaction {
   purpose?: string;
 }
 
+interface MemberCard {
+  id: string;
+  memberId: string;
+  membershipNumber: string;
+  memberName: string;
+  memberEmail: string;
+  memberPhone: string;
+  memberCity?: string;
+  memberAddress?: string;
+  cardNumber: string;
+  qrCodeUrl?: string;
+  cardImageUrl?: string;
+  isGenerated: boolean;
+  validFrom: string;
+  validUntil: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export default function MemberDashboard() {
   const { user, logout, isMember, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
