@@ -830,7 +830,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   app.get("/api/my-membership-card", authMiddleware, async (req: AuthRequest, res) => {
     try {
-      const membership = await storage.getMembershipByUserId(parseInt(req.user?.id || "0"));
+      const membership = await storage.getMembershipByUserId(req.user?.id || "");
       if (!membership) return res.status(404).json({ error: "Membership not found" });
       
       const card = await storage.getMembershipCardByMembershipId(membership.id);
