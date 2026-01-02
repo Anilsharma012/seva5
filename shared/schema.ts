@@ -123,6 +123,7 @@ export interface PaymentConfig {
   accountNumber?: string | null;
   ifscCode?: string | null;
   accountHolderName?: string | null;
+  level?: FeeLevel | null;
   isActive: boolean;
   order: number;
   createdAt: Date;
@@ -405,6 +406,7 @@ export const insertPaymentConfigSchema = z.object({
   accountNumber: z.string().optional(),
   ifscCode: z.string().optional(),
   accountHolderName: z.string().optional(),
+  level: z.enum(['village', 'block', 'district', 'haryana']).optional(),
   isActive: z.boolean().optional(),
   order: z.number().optional(),
 });
