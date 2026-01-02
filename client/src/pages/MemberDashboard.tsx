@@ -5,7 +5,7 @@ import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, LogOut, Mail, Phone, MapPin, Loader2, Settings } from "lucide-react";
+import { Users, LogOut, Mail, Phone, MapPin, Loader2, Settings, CreditCard, CheckCircle, Clock, AlertCircle } from "lucide-react";
 
 interface MemberData {
   id: string;
@@ -18,10 +18,21 @@ interface MemberData {
   address?: string;
 }
 
+interface PaymentTransaction {
+  id: string;
+  type: string;
+  amount: number;
+  status: "pending" | "approved" | "rejected";
+  transactionId: string;
+  createdAt: string;
+  purpose?: string;
+}
+
 export default function MemberDashboard() {
   const { user, logout, isMember, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [member, setMember] = useState<MemberData | null>(null);
+  const [transactions, setTransactions] = useState<PaymentTransaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
 
@@ -30,9 +41,10 @@ export default function MemberDashboard() {
       navigate("/member/login");
       return;
     }
-    
+
     if (user?.id) {
       fetchMemberData();
+      fetchPaymentTransactions();
     }
   }, [isMember, user, authLoading, navigate]);
 
@@ -42,7 +54,7 @@ export default function MemberDashboard() {
       const res = await fetch("/api/auth/member/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         setMember({
@@ -60,6 +72,22 @@ export default function MemberDashboard() {
       console.error("Error fetching member data:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchPaymentTransactions = async () => {
+    try {
+      const token = localStorage.getItem("auth_token");
+      const res = await fetch("/api/auth/member/transactions", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setTransactions(data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
     }
   };
 
@@ -91,8 +119,35 @@ export default function MemberDashboard() {
     );
   }
 
+  const getPaymentStatusIcon = (status: string) => {
+    switch (status) {
+      case "approved":
+        return <CheckCircle className="h-5 w-5 text-green-600" />;
+      case "pending":
+        return <Clock className="h-5 w-5 text-orange-600" />;
+      case "rejected":
+        return <AlertCircle className="h-5 w-5 text-red-600" />;
+      default:
+        return <CreditCard className="h-5 w-5 text-gray-600" />;
+    }
+  };
+
+  const getPaymentStatusBadge = (status: string) => {
+    switch (status) {
+      case "approved":
+        return <Badge className="bg-green-500">Approved</Badge>;
+      case "pending":
+        return <Badge className="bg-orange-500">Pending</Badge>;
+      case "rejected":
+        return <Badge className="bg-red-500">Rejected</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
   const sidebarItems = [
     { id: "dashboard", icon: Users, label: "Dashboard", labelHi: "डैशबोर्ड" },
+    { id: "payments", icon: CreditCard, label: "Payment Status", labelHi: "भुगतान स्थिति" },
     { id: "settings", icon: Settings, label: "Settings", labelHi: "सेटिंग्स" },
   ];
 
@@ -248,6 +303,93 @@ export default function MemberDashboard() {
                     </ul>
                   </CardContent>
                 </Card>
+              </>
+            )}
+
+            {activeTab === "payments" && (
+              <>
+                <div className="space-y-4">
+                  <div>
+                    <h2 className="text-xl font-bold mb-2">Payment Status / भुगतान स्थिति</h2>
+                    <p className="text-muted-foreground">Track your registration payment status</p>
+                  </div>
+
+                  {transactions.length === 0 ? (
+                    <Card className="border-orange-200 bg-orange-50 dark:bg-orange-900/20 dark:border-orange-800">
+                      <CardContent className="p-6 text-center">
+                        <AlertCircle className="h-12 w-12 text-orange-600 mx-auto mb-3" />
+                        <p className="font-semibold text-orange-900 dark:text-orange-200 mb-1">No Payment Transactions</p>
+                        <p className="text-sm text-orange-800 dark:text-orange-300">
+                          आपके कोई भुगतान लेनदेन नहीं मिले। कृपया रजिस्ट्रेशन फॉर्म फिर से भरें।
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="space-y-3">
+                      {transactions.map((transaction) => (
+                        <Card key={transaction.id} className="border-l-4 border-l-blue-500">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span className="font-semibold text-foreground">
+                                    Registration Payment / रजिस्ट्रेशन भुगतान
+                                  </span>
+                                  {getPaymentStatusBadge(transaction.status)}
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                  <div>
+                                    <p className="text-muted-foreground">Transaction ID</p>
+                                    <p className="font-mono font-medium">{transaction.transactionId}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Amount</p>
+                                    <p className="font-semibold">₹{transaction.amount}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Date</p>
+                                    <p>{new Date(transaction.createdAt).toLocaleDateString("en-IN")}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Purpose</p>
+                                    <p>{transaction.purpose || "Member Registration"}</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex-shrink-0">
+                                {getPaymentStatusIcon(transaction.status)}
+                              </div>
+                            </div>
+
+                            {transaction.status === "pending" && (
+                              <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900/20 rounded border border-orange-200 dark:border-orange-800">
+                                <p className="text-sm text-orange-800 dark:text-orange-300">
+                                  ⏳ आपका भुगतान प्रशासक द्वारा सत्यापित किया जा रहा है। कृपया 24-48 घंटों में प्रतीक्षा करें।
+                                </p>
+                              </div>
+                            )}
+
+                            {transaction.status === "approved" && (
+                              <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                                <p className="text-sm text-green-800 dark:text-green-300">
+                                  ✓ आपका भुगतान स्वीकृत हो गया है। आप अब अपने खाते में लॉगिन कर सकते हैं।
+                                </p>
+                              </div>
+                            )}
+
+                            {transaction.status === "rejected" && (
+                              <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800">
+                                <p className="text-sm text-red-800 dark:text-red-300">
+                                  ✗ आपका भुगतान अस्वीकार कर दिया गया है। कृपया सही Transaction ID के साथ फिर से प्रयास करें।
+                                </p>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </>
             )}
 

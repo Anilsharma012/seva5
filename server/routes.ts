@@ -1,18 +1,21 @@
 import type { Express } from "express";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { storage } from "./storage";
 import { authMiddleware, adminOnly, generateToken, AuthRequest } from "./middleware/auth";
 import { insertGalleryImageSchema } from "@shared/schema";
-import { 
-  sendStudentRegistrationEmail, 
-  sendVolunteerRegistrationEmail, 
+import {
+  sendStudentRegistrationEmail,
+  sendVolunteerRegistrationEmail,
   sendPaymentConfirmationEmail,
   sendApprovalEmail,
   sendAdminNotificationEmail,
   sendResultNotificationEmail,
   sendAdmitCardNotificationEmail,
-  sendRollNumberNotificationEmail
+  sendRollNumberNotificationEmail,
+  sendPasswordResetEmail
 } from "./email";
+import { Member, PasswordResetToken } from "./models";
 
 export async function registerRoutes(app: Express): Promise<void> {
   
@@ -1371,11 +1374,10 @@ export async function registerRoutes(app: Express): Promise<void> {
       }
 
       // Generate reset token
-      const resetToken = require('crypto').randomBytes(32).toString('hex');
+      const resetToken = crypto.randomBytes(32).toString('hex');
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
       // Save reset token to database
-      const { PasswordResetToken } = require('./models');
       await PasswordResetToken.create({
         userId: student.id,
         userType: 'student',
@@ -1388,7 +1390,6 @@ export async function registerRoutes(app: Express): Promise<void> {
       const resetLink = `${process.env.PUBLIC_BASE_URL}/student/reset-password?token=${resetToken}`;
 
       // Send email
-      const { sendPasswordResetEmail } = require('./email');
       await sendPasswordResetEmail({
         email: student.email,
         name: student.fullName,
@@ -1411,7 +1412,6 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(400).json({ error: "Token and new password are required" });
       }
 
-      const { PasswordResetToken } = require('./models');
       const resetTokenDoc = await PasswordResetToken.findOne({ token, used: false });
 
       if (!resetTokenDoc) {
@@ -1444,8 +1444,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   // ============ MEMBER ROUTES ============
   app.post("/api/auth/member/register", async (req, res) => {
     try {
-      const { email, password, fullName, phone, city } = req.body;
-      const { Member } = require('./models');
+      const { email, password, fullName, phone, city, address } = req.body;
 
       const existing = await Member.findOne({ email });
       if (existing) {
@@ -1462,13 +1461,14 @@ export async function registerRoutes(app: Express): Promise<void> {
         fullName,
         phone,
         city: city || 'Haryana',
+        address: address || '',
         membershipNumber,
+        membershipType: 'regular',
         isActive: true
       });
 
       const token = generateToken({ id: member._id.toString(), email: member.email, role: "member", name: member.fullName });
 
-      const { sendApprovalEmail } = require('./email');
       await sendApprovalEmail({
         email: member.email,
         name: member.fullName,
@@ -1502,7 +1502,6 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.post("/api/auth/member/login", async (req, res) => {
     try {
       const { email, password } = req.body;
-      const { Member } = require('./models');
 
       const member = await Member.findOne({ email });
 
@@ -1517,6 +1516,14 @@ export async function registerRoutes(app: Express): Promise<void> {
       const isValid = await bcrypt.compare(password, member.password);
       if (!isValid) {
         return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      // Check if member has approved payment transaction
+      const transactions = await storage.getPaymentTransactionsByEmail(email);
+      const hasApprovedPayment = transactions.some(t => t.status === "approved" && t.type === "membership");
+
+      if (!hasApprovedPayment) {
+        return res.status(403).json({ error: "Payment pending approval. Please wait for admin approval. / भुगतान स्वीकृति लंबित है।" });
       }
 
       const token = generateToken({ id: member._id.toString(), email: member.email, role: "member", name: member.fullName });
@@ -1540,7 +1547,6 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.post("/api/auth/member/forgot-password", async (req, res) => {
     try {
       const { email } = req.body;
-      const { Member } = require('./models');
 
       const member = await Member.findOne({ email });
 
@@ -1549,10 +1555,9 @@ export async function registerRoutes(app: Express): Promise<void> {
       }
 
       // Generate reset token
-      const resetToken = require('crypto').randomBytes(32).toString('hex');
+      const resetToken = crypto.randomBytes(32).toString('hex');
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-      const { PasswordResetToken } = require('./models');
       await PasswordResetToken.create({
         userId: member._id,
         userType: 'member',
@@ -1564,7 +1569,6 @@ export async function registerRoutes(app: Express): Promise<void> {
 
       const resetLink = `${process.env.PUBLIC_BASE_URL}/member/reset-password?token=${resetToken}`;
 
-      const { sendPasswordResetEmail } = require('./email');
       await sendPasswordResetEmail({
         email: member.email,
         name: member.fullName,
@@ -1582,8 +1586,6 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.post("/api/auth/member/reset-password", async (req, res) => {
     try {
       const { token, newPassword } = req.body;
-      const { PasswordResetToken } = require('./models');
-      const { Member } = require('./models');
 
       if (!token || !newPassword) {
         return res.status(400).json({ error: "Token and new password are required" });
@@ -1622,7 +1624,6 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(403).json({ error: "Only members can access this endpoint" });
       }
 
-      const { Member } = require('./models');
       const member = await Member.findById(req.user.id);
 
       if (!member) {
@@ -1633,6 +1634,31 @@ export async function registerRoutes(app: Express): Promise<void> {
       res.json({ ...memberData, role: "member" });
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch member data" });
+    }
+  });
+
+  app.get("/api/auth/member/transactions", authMiddleware, async (req: AuthRequest, res) => {
+    try {
+      if (req.user?.role !== "member") {
+        return res.status(403).json({ error: "Only members can access this endpoint" });
+      }
+
+      const member = await Member.findById(req.user.id);
+
+      if (!member) {
+        return res.status(404).json({ error: "Member not found" });
+      }
+
+      // Get payment transactions for this member by email
+      const transactions = await storage.getPaymentTransactionsByEmail(member.email);
+
+      // Filter to only membership transactions
+      const membershipTransactions = transactions.filter(t => t.type === "membership");
+
+      res.json(membershipTransactions);
+    } catch (error) {
+      console.error("Error fetching member transactions:", error);
+      res.status(500).json({ error: "Failed to fetch transactions" });
     }
   });
 }
