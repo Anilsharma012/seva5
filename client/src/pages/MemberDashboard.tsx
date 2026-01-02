@@ -5,7 +5,7 @@ import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, LogOut, Mail, Phone, MapPin, Loader2, Settings } from "lucide-react";
+import { Users, LogOut, Mail, Phone, MapPin, Loader2, Settings, CreditCard, CheckCircle, Clock, AlertCircle } from "lucide-react";
 
 interface MemberData {
   id: string;
@@ -16,6 +16,16 @@ interface MemberData {
   membershipNumber: string;
   createdAt?: string;
   address?: string;
+}
+
+interface PaymentTransaction {
+  id: string;
+  type: string;
+  amount: number;
+  status: "pending" | "approved" | "rejected";
+  transactionId: string;
+  createdAt: string;
+  purpose?: string;
 }
 
 export default function MemberDashboard() {
