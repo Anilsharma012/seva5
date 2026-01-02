@@ -198,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.get("/api/auth/me", authMiddleware, async (req: AuthRequest, res) => {
     try {
       if (req.user?.role === "admin") {
-        const admin = await storage.getAdminById(parseInt(req.user.id));
+        const admin = await storage.getAdminById(req.user.id);
         if (!admin) return res.status(404).json({ error: "Admin not found" });
         const { password, ...adminData } = admin;
         res.json({ ...adminData, role: "admin" });
