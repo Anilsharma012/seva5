@@ -24,7 +24,7 @@ interface PaymentConfig {
   ifscCode?: string;
   accountHolderName?: string;
   isActive: boolean;
-  level?: string;
+  level?: "village" | "block" | "district" | "haryana";
 }
 
 const feeLevels = [
@@ -80,8 +80,8 @@ export default function StudentRegistration() {
 
   // Get payment config for selected fee level
   const feeConfig = paymentConfigs.find(config =>
-    config.name?.toLowerCase().includes(formData.feeLevel.toLowerCase())
-  ) || paymentConfigs[0];
+    config.level === formData.feeLevel
+  ) || paymentConfigs.find(config => config.type === 'fee') || paymentConfigs[0];
 
   const hasQR = feeConfig?.qrCodeUrl;
   const hasUPI = feeConfig?.upiId;
@@ -144,7 +144,7 @@ export default function StudentRegistration() {
       if (result.success) {
         // Create payment transaction for admin approval
         try {
-          await fetch("/api/public/payment-transaction", {
+          const txResponse = await fetch("/api/public/payment-transaction", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -161,11 +161,23 @@ export default function StudentRegistration() {
               city: formData.city,
             }),
           });
+
+          if (!txResponse.ok) {
+            try {
+              const txErrorText = await txResponse.text();
+              if (txErrorText) {
+                const txError = JSON.parse(txErrorText);
+                console.warn("Payment transaction creation warning:", txError);
+              }
+            } catch (parseErr) {
+              console.warn("Could not parse payment error response:", parseErr);
+            }
+          }
         } catch (txError) {
           console.error("Payment transaction creation failed:", txError);
         }
 
-        setRegistrationData({ 
+        setRegistrationData({
           email: formData.email,
           registrationNumber: result.registrationNumber || ""
         });
@@ -176,13 +188,14 @@ export default function StudentRegistration() {
           description: "आपका रजिस्ट्रेशन पूरा हो गया है। भुगतान की पुष्टि होने पर लॉगिन कर सकते हैं।",
         });
       } else {
-        throw new Error(result.error);
+        throw new Error(result.error || "रजिस्ट्रेशन विफल रहा");
       }
     } catch (error: any) {
-      console.error("Registration error:", error);
+      console.error("Registration error details:", error);
+      const errorMessage = error?.message || "कुछ गलत हो गया। कृपया फिर से प्रयास करें।";
       toast({
         title: "रजिस्ट्रेशन विफल",
-        description: error.message || "कुछ गलत हो गया",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

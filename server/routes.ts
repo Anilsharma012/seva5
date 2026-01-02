@@ -91,22 +91,36 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   app.post("/api/auth/student/register", async (req, res) => {
+    let responseSent = false;
+    console.log("[REGISTER] Request received:", { email: req.body.email, class: req.body.class });
+
     try {
       const { email, password, fullName, phone, fatherName, motherName, address, city, pincode, dateOfBirth, gender, class: studentClass, feeLevel } = req.body;
-      
+
+      // Validation
+      if (!email || !password || !fullName || !studentClass) {
+        console.log("[REGISTER] Validation failed - missing fields");
+        responseSent = true;
+        return res.status(400).json({ error: "Missing required fields: email, password, fullName, class" });
+      }
+
       const existing = await storage.getStudentByEmail(email);
       if (existing) {
+        responseSent = true;
         return res.status(400).json({ error: "Email already registered" });
       }
-      
+
       const year = new Date().getFullYear();
       const count = await storage.countStudentsWithRegPrefix(`MWSS${year}`);
       const registrationNumber = `MWSS${year}${String(count + 1).padStart(4, "0")}`;
-      
+
       const feeAmounts: Record<string, number> = { village: 99, block: 199, district: 299, haryana: 399 };
       const feeAmount = feeAmounts[feeLevel] || 99;
-      
+
+      console.log("[REGISTER] Hashing password...");
       const hashedPassword = await bcrypt.hash(password, 10);
+
+      console.log("[REGISTER] Creating student in database...");
       const student = await storage.createStudent({
         email,
         password: hashedPassword,
@@ -124,10 +138,24 @@ export async function registerRoutes(app: Express): Promise<void> {
         feeLevel: feeLevel || "village",
         feeAmount,
       });
-      
+
+      console.log("[REGISTER] Student created:", { id: student?.id, email: student?.email });
+
+      if (!student || !student.id) {
+        throw new Error("Failed to create student record - no student ID returned");
+      }
+
+      console.log("[REGISTER] Generating token...");
       const token = generateToken({ id: student.id.toString(), email: student.email, role: "student", name: student.fullName });
-      
-      // Send email notifications
+      console.log("[REGISTER] Token generated successfully");
+
+      const responseData = {
+        token,
+        user: { id: student.id, email: student.email, role: "student", name: student.fullName },
+        registrationNumber
+      };
+
+      // Send email notifications (non-blocking)
       sendStudentRegistrationEmail({
         email: student.email,
         fullName: student.fullName,
@@ -135,7 +163,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         fatherName: fatherName || "",
         phone: student.phone || "",
       }).catch(err => console.error("Student registration email error:", err));
-      
+
       sendAdminNotificationEmail({
         type: "Student Registration",
         name: student.fullName,
@@ -147,11 +175,23 @@ export async function registerRoutes(app: Express): Promise<void> {
           "Amount": `Rs. ${feeAmount}`,
         },
       }).catch(err => console.error("Admin notification email error:", err));
-      
-      res.status(201).json({ token, user: { id: student.id, email: student.email, role: "student", name: student.fullName }, registrationNumber });
-    } catch (error) {
-      console.error("Registration error:", error);
-      res.status(500).json({ error: "Registration failed" });
+
+      console.log("[REGISTER] Sending success response...");
+      responseSent = true;
+      res.status(201).json(responseData);
+      console.log("[REGISTER] Response sent successfully");
+    } catch (error: any) {
+      console.error("Registration error details:", error);
+      if (!responseSent) {
+        responseSent = true;
+        const errorMessage = error?.message || "Registration failed";
+        try {
+          res.status(500).json({ error: errorMessage });
+        } catch (sendErr) {
+          console.error("Failed to send error response:", sendErr);
+          res.status(500).end();
+        }
+      }
     }
   });
 
@@ -603,9 +643,10 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.get("/api/public/payment-config/:type", async (req, res) => {
     try {
       const configs = await storage.getPaymentConfigsByType(req.params.type);
-      res.json(configs);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch payment config" });
+      res.json(configs || []);
+    } catch (error: any) {
+      console.error("Payment config fetch error:", error);
+      res.status(500).json({ error: error?.message || "Failed to fetch payment config" });
     }
   });
 
@@ -1045,12 +1086,17 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.post("/api/public/payment-transaction", async (req, res) => {
     try {
       const { type, name, email, phone, amount, transactionId, paymentMethod, purpose, fatherName, address, city, state, pincode, membershipLevel, photoUrl } = req.body;
-      
+
+      // Validation
+      if (!type || !name || !phone || !amount || !transactionId) {
+        return res.status(400).json({ error: "Missing required fields: type, name, phone, amount, transactionId" });
+      }
+
       const existingTransaction = await storage.getPaymentTransactionByTransactionId(transactionId);
       if (existingTransaction) {
         return res.status(400).json({ error: "Transaction ID already exists" });
       }
-      
+
       const transaction = await storage.createPaymentTransaction({
         type,
         name,
@@ -1068,8 +1114,8 @@ export async function registerRoutes(app: Express): Promise<void> {
         membershipLevel,
         photoUrl,
       });
-      
-      // Send email notifications
+
+      // Send email notifications (non-blocking)
       if (email) {
         sendPaymentConfirmationEmail({
           email,
@@ -1080,7 +1126,7 @@ export async function registerRoutes(app: Express): Promise<void> {
           purpose,
         }).catch(err => console.error("Payment confirmation email error:", err));
       }
-      
+
       sendAdminNotificationEmail({
         type: `Payment (${type || "Unknown"})`,
         name: name || "Unknown",
@@ -1093,15 +1139,16 @@ export async function registerRoutes(app: Express): Promise<void> {
           "Purpose": purpose || "N/A",
         },
       }).catch(err => console.error("Admin payment notification error:", err));
-      
-      res.status(201).json({ 
-        success: true, 
+
+      res.status(201).json({
+        success: true,
         message: "Payment submitted successfully! Please wait for admin approval. / भुगतान सफलतापूर्वक जमा हुआ! कृपया व्यवस्थापक की मंजूरी की प्रतीक्षा करें।",
         transaction: { id: transaction.id, status: transaction.status }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Payment transaction error:", error);
-      res.status(500).json({ error: "Failed to submit payment" });
+      const errorMessage = error?.message || "Failed to submit payment";
+      res.status(500).json({ error: errorMessage });
     }
   });
 

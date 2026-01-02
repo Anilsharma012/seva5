@@ -26,6 +26,7 @@ interface PaymentConfig {
   accountNumber?: string;
   ifscCode?: string;
   accountHolderName?: string;
+  level?: "village" | "block" | "district" | "haryana";
   isActive: boolean;
   order: number;
 }
@@ -35,6 +36,13 @@ const typeOptions = [
   { value: "fee", label: "Fee Payment" },
   { value: "membership", label: "Membership" },
   { value: "general", label: "General" },
+];
+
+const levelOptions = [
+  { value: "village", label: "Village Level / ग्राम स्तर (₹99)" },
+  { value: "block", label: "Block Level / ब्लॉक स्तर (₹199)" },
+  { value: "district", label: "District Level / जिला स्तर (₹299)" },
+  { value: "haryana", label: "Haryana Level / हरियाणा स्तर (₹399)" },
 ];
 
 export default function AdminPayments() {
@@ -53,6 +61,7 @@ export default function AdminPayments() {
     accountNumber: "",
     ifscCode: "",
     accountHolderName: "",
+    level: "" as "" | "village" | "block" | "district" | "haryana",
     isActive: true,
     order: 0
   });
@@ -134,6 +143,7 @@ export default function AdminPayments() {
       accountNumber: config.accountNumber || "",
       ifscCode: config.ifscCode || "",
       accountHolderName: config.accountHolderName || "",
+      level: config.level || ("" as any),
       isActive: config.isActive,
       order: config.order
     });
@@ -152,6 +162,7 @@ export default function AdminPayments() {
       accountNumber: "",
       ifscCode: "",
       accountHolderName: "",
+      level: "",
       isActive: true,
       order: 0
     });
@@ -265,9 +276,23 @@ export default function AdminPayments() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="display-order">Display Order</Label>
-                  <Input id="display-order" type="number" value={form.order} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} data-testid="input-order" />
+                  <Label htmlFor="fee-level">Fee Level (if type is Fee)</Label>
+                  <Select value={form.level} onValueChange={(v: any) => setForm({ ...form, level: v })}>
+                    <SelectTrigger id="fee-level" data-testid="select-level">
+                      <SelectValue placeholder="Select level (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">None</SelectItem>
+                      {levelOptions.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="display-order">Display Order</Label>
+                <Input id="display-order" type="number" value={form.order} onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 0 })} data-testid="input-order" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">

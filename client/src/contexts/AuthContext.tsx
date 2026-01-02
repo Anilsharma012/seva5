@@ -68,7 +68,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (res.ok) {
-        const data = await res.json();
+        let data;
+        try {
+          const text = await res.text();
+          if (!text) throw new Error("Empty response");
+          data = JSON.parse(text);
+        } catch (parseError) {
+          console.error("Failed to parse current user response:", parseError);
+          localStorage.removeItem("auth_token");
+          setToken(null);
+          setIsLoading(false);
+          return;
+        }
+
         setUser({
           id: data._id || data.id,
           email: data.email,
@@ -79,7 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem("auth_token");
         setToken(null);
       }
-    } catch {
+    } catch (error) {
+      console.error("Failed to fetch current user:", error);
       localStorage.removeItem("auth_token");
       setToken(null);
     } finally {
@@ -102,7 +115,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        const text = await res.text();
+        if (!text) {
+          setIsLoading(false);
+          return { success: false, error: "Server returned empty response" };
+        }
+        data = JSON.parse(text);
+      } catch (parseError) {
+        console.error("Failed to parse login response:", parseError);
+        setIsLoading(false);
+        return { success: false, error: "Invalid response from server" };
+      }
 
       if (!res.ok) {
         setIsLoading(false);
@@ -119,9 +144,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       setIsLoading(false);
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       setIsLoading(false);
-      return { success: false, error: "Network error" };
+      return { success: false, error: error?.message || "Network error" };
     }
   };
 
@@ -137,10 +162,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(data),
       });
 
-      const result = await res.json();
+      let result;
+      try {
+        const text = await res.text();
+        if (!text) {
+          console.error("Empty response from server");
+          setIsLoading(false);
+          return { success: false, error: "Server returned empty response. Please try again." };
+        }
+        result = JSON.parse(text);
+      } catch (parseError) {
+        console.error("Failed to parse JSON response:", parseError);
+        setIsLoading(false);
+        return { success: false, error: "Invalid response from server. Please try again." };
+      }
 
       if (!res.ok) {
         setIsLoading(false);
+        console.error("Registration API error:", result);
         return { success: false, error: result.error || "Registration failed" };
       }
 
@@ -154,9 +193,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       setIsLoading(false);
       return { success: true, registrationNumber: result.registrationNumber };
-    } catch (error) {
+    } catch (error: any) {
       setIsLoading(false);
-      return { success: false, error: "Network error" };
+      const errorMessage = error?.message || "Network error";
+      console.error("Signup network error:", error);
+      return { success: false, error: errorMessage };
     }
   };
 
@@ -175,15 +216,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        const text = await res.text();
+        if (!text) {
+          return { success: false, error: "Server returned empty response" };
+        }
+        data = JSON.parse(text);
+      } catch (parseError) {
+        console.error("Failed to parse forgot password response:", parseError);
+        return { success: false, error: "Invalid response from server" };
+      }
 
       if (!res.ok) {
         return { success: false, error: data.error || "Failed to send reset email" };
       }
 
       return { success: true };
-    } catch (error) {
-      return { success: false, error: "Network error" };
+    } catch (error: any) {
+      console.error("Forgot password error:", error);
+      return { success: false, error: error?.message || "Network error" };
     }
   };
 
@@ -196,15 +248,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ token, newPassword }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        const text = await res.text();
+        if (!text) {
+          return { success: false, error: "Server returned empty response" };
+        }
+        data = JSON.parse(text);
+      } catch (parseError) {
+        console.error("Failed to parse reset password response:", parseError);
+        return { success: false, error: "Invalid response from server" };
+      }
 
       if (!res.ok) {
         return { success: false, error: data.error || "Failed to reset password" };
       }
 
       return { success: true };
-    } catch (error) {
-      return { success: false, error: "Network error" };
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      return { success: false, error: error?.message || "Network error" };
     }
   };
 

@@ -106,6 +106,7 @@ export interface IPaymentConfig extends Document {
   accountNumber?: string;
   ifscCode?: string;
   accountHolderName?: string;
+  level?: 'village' | 'block' | 'district' | 'haryana';
   isActive: boolean;
   order: number;
   createdAt: Date;
@@ -412,6 +413,7 @@ const PaymentConfigSchema = new Schema<IPaymentConfig>({
   accountNumber: String,
   ifscCode: String,
   accountHolderName: String,
+  level: { type: String, enum: ['village', 'block', 'district', 'haryana'] },
   isActive: { type: Boolean, default: true },
   order: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
