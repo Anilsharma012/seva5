@@ -102,7 +102,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        const text = await res.text();
+        if (!text) {
+          setIsLoading(false);
+          return { success: false, error: "Server returned empty response" };
+        }
+        data = JSON.parse(text);
+      } catch (parseError) {
+        console.error("Failed to parse login response:", parseError);
+        setIsLoading(false);
+        return { success: false, error: "Invalid response from server" };
+      }
 
       if (!res.ok) {
         setIsLoading(false);
@@ -119,9 +131,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       setIsLoading(false);
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       setIsLoading(false);
-      return { success: false, error: "Network error" };
+      return { success: false, error: error?.message || "Network error" };
     }
   };
 
