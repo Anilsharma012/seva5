@@ -50,6 +50,19 @@ app.use((req, res, next) => {
   registerObjectStorageRoutes(app);
   await registerRoutes(app);
 
+  // Register frontend fallback/static serving BEFORE error handler
+  if (process.env.NODE_ENV === "development") {
+    // Agar external Vite (5173) chala rahe ho, to backend me Vite middleware mat lagao
+    if (process.env.EXTERNAL_VITE !== "true") {
+      await setupVite(app);
+    } else {
+      // For external Vite, serve index.html for non-API routes as fallback
+      serveIndexHtmlFallback(app);
+    }
+  } else {
+    serveStatic(app);
+  }
+
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     console.error("Global error handler caught:", err);
     const status = (err as { status?: number }).status || (err as { statusCode?: number }).statusCode || 500;
@@ -60,18 +73,6 @@ app.use((req, res, next) => {
       res.status(status).json({ error: message });
     }
   });
-
- if (process.env.NODE_ENV === "development") {
-  // Agar external Vite (5173) chala rahe ho, to backend me Vite middleware mat lagao
-  if (process.env.EXTERNAL_VITE !== "true") {
-    await setupVite(app);
-  } else {
-    // For external Vite, serve index.html for non-API routes as fallback
-    serveIndexHtmlFallback(app);
-  }
-} else {
-  serveStatic(app);
-}
 
 const port = Number(process.env.PORT) || 5011;
 
