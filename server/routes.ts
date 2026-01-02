@@ -1412,7 +1412,6 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(400).json({ error: "Token and new password are required" });
       }
 
-      const { PasswordResetToken } = require('./models');
       const resetTokenDoc = await PasswordResetToken.findOne({ token, used: false });
 
       if (!resetTokenDoc) {
