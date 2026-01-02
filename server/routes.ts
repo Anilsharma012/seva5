@@ -1445,8 +1445,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   // ============ MEMBER ROUTES ============
   app.post("/api/auth/member/register", async (req, res) => {
     try {
-      const { email, password, fullName, phone, city } = req.body;
-      const { Member } = require('./models');
+      const { email, password, fullName, phone, city, address } = req.body;
 
       const existing = await Member.findOne({ email });
       if (existing) {
@@ -1463,13 +1462,14 @@ export async function registerRoutes(app: Express): Promise<void> {
         fullName,
         phone,
         city: city || 'Haryana',
+        address: address || '',
         membershipNumber,
+        membershipType: 'regular',
         isActive: true
       });
 
       const token = generateToken({ id: member._id.toString(), email: member.email, role: "member", name: member.fullName });
 
-      const { sendApprovalEmail } = require('./email');
       await sendApprovalEmail({
         email: member.email,
         name: member.fullName,
