@@ -36,30 +36,10 @@ export default function MemberICard({ iCard, isLoading, error, onDownload }: Mem
   const cardRef = useRef<HTMLDivElement>(null);
 
   const handleDownloadPDF = async () => {
-    if (!cardRef.current) return;
-
     setIsDownloading(true);
     try {
-      // For now, we'll implement HTML to image conversion
-      // In production, you might want to use a library like html2canvas + jsPDF
-      const element = cardRef.current;
-      const canvas = await import("html2canvas").then(module => 
-        module.default(element, {
-          scale: 2,
-          backgroundColor: '#ffffff'
-        })
-      );
-      
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL("image/png");
-      link.download = `${iCard?.memberName.replace(/\s+/g, "_")}_icard.png`;
-      link.click();
-
-      onDownload?.();
-    } catch (err) {
-      console.error("Download error:", err);
-      // Fallback: simple image download without html2canvas
       handleSimpleDownload();
+      onDownload?.();
     } finally {
       setIsDownloading(false);
     }
