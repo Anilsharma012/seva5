@@ -114,7 +114,10 @@ export default function AdminGallery() {
                       return {
                         method: "PUT",
                         url: data.uploadURL,
-                        headers: { "Content-Type": file.type || "application/octet-stream" },
+                        headers: {
+                          "Content-Type": file.type || "application/octet-stream",
+                          Authorization: `Bearer ${token}`
+                        },
                       };
                     }}
                     onComplete={(result) => {
