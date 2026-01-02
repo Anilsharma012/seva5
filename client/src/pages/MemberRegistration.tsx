@@ -239,16 +239,16 @@ export default function MemberRegistration() {
                   </p>
                 </div>
 
-                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 p-4 rounded-lg">
-                  <h4 className="font-semibold text-orange-900 dark:text-orange-200 mb-2">
+                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 p-4 rounded-lg space-y-2">
+                  <h4 className="font-semibold text-orange-900 dark:text-orange-200">
                     ⏳ Admin Approval Pending / व्यवस्थापक की मंजूरी की प्रतीक्षा है
                   </h4>
-                  <p className="text-orange-800 dark:text-orange-300 text-sm mb-2">
-                    आपका भुगतान अभी सत्यापन के तहत है। कृपया अगले 24-48 घंटों में admin की मंजूरी के लिए प्रतीक्षा करें।
-                  </p>
-                  <p className="text-orange-800 dark:text-orange-300 text-sm">
-                    Approval के बाद आप अपने Email और Password से login कर सकेंगे।
-                  </p>
+                  <div className="text-orange-800 dark:text-orange-300 text-sm space-y-1">
+                    <p><strong>Step 1:</strong> Admin will verify your payment transaction</p>
+                    <p><strong>Step 2:</strong> Admin will verify and approve your membership account</p>
+                    <p className="mt-2">कृपया अगले 24-48 घंटों में admin की मंजूरी के लिए प्रतीक्षा करें।</p>
+                    <p>दोनों approval के बाद आप अपने Email और Password से login कर सकेंगे।</p>
+                  </div>
                 </div>
 
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
@@ -570,16 +570,16 @@ export default function MemberRegistration() {
                   </p>
                 </div>
 
-                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 p-4 rounded-lg">
-                  <h4 className="font-semibold text-orange-900 dark:text-orange-200 mb-2">
+                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 p-4 rounded-lg space-y-2">
+                  <h4 className="font-semibold text-orange-900 dark:text-orange-200">
                     ⏳ Admin Approval Pending / व्यवस्थापक की मंजूरी की प्रतीक्षा है
                   </h4>
-                  <p className="text-orange-800 dark:text-orange-300 text-sm mb-2">
-                    आपका भुगतान अभी सत्यापन के तहत है। कृपया अगले 24-48 घंटों में admin की मंजूरी के लिए प्रतीक्षा करें।
-                  </p>
-                  <p className="text-orange-800 dark:text-orange-300 text-sm">
-                    Approval के बाद आप अपने Email और Password से login कर सकेंगे।
-                  </p>
+                  <div className="text-orange-800 dark:text-orange-300 text-sm space-y-1">
+                    <p><strong>Step 1:</strong> Admin will verify your payment transaction</p>
+                    <p><strong>Step 2:</strong> Admin will verify and approve your membership account</p>
+                    <p className="mt-2">कृपया अगले 24-48 घंटों में admin की मंजूरी के लिए प्रतीक्षा करें।</p>
+                    <p>दोनों approval के बाद आप अपने Email और Password से login कर सकेंगे।</p>
+                  </div>
                 </div>
 
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
