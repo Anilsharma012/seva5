@@ -7,15 +7,51 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Users, CheckCircle, Copy } from "lucide-react";
+import { Users, CheckCircle, Copy, Loader2, QrCode, Building } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
 
+interface PaymentConfig {
+  id: number;
+  type: string;
+  name: string;
+  nameHindi?: string;
+  qrCodeUrl?: string;
+  upiId?: string;
+  bankName?: string;
+  accountNumber?: string;
+  ifscCode?: string;
+  accountHolderName?: string;
+  isActive: boolean;
+}
+
+const MEMBERSHIP_FEE = 99;
+
 export default function MemberRegistration() {
+  const [step, setStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [registrationData, setRegistrationData] = useState<{ email: string; membershipNumber: string } | null>(null);
+  const [paymentConfigs, setPaymentConfigs] = useState<PaymentConfig[]>([]);
+  const [paymentLoading, setPaymentLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { signup } = useAuth();
+
+  useEffect(() => {
+    const fetchPaymentConfigs = async () => {
+      try {
+        const res = await fetch("/api/public/payment-config/membership");
+        if (res.ok) {
+          const data = await res.json();
+          setPaymentConfigs(data);
+        }
+      } catch (error) {
+        console.error("Error fetching payment configs:", error);
+      } finally {
+        setPaymentLoading(false);
+      }
+    };
+    fetchPaymentConfigs();
+  }, []);
 
   const [formData, setFormData] = useState({
     memberName: "",
@@ -25,6 +61,7 @@ export default function MemberRegistration() {
     phone: "",
     city: "Haryana",
     address: "",
+    transactionId: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
