@@ -4,7 +4,7 @@ import "dotenv/config";
 
 import { registerRoutes } from "./routes";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage/routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { setupVite, serveStatic, serveIndexHtmlFallback, log } from "./vite";
 import { connectDB } from "./db";
 import { seedDatabase } from "./seed";
 
