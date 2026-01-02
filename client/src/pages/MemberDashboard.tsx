@@ -448,6 +448,14 @@ export default function MemberDashboard() {
               </>
             )}
 
+            {activeTab === "icard" && (
+              <MemberICard
+                iCard={iCard}
+                isLoading={iCardLoading}
+                error={iCardError}
+              />
+            )}
+
             {activeTab === "settings" && (
               <Card>
                 <CardHeader>
