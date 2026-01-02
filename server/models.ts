@@ -303,6 +303,7 @@ export interface IMember extends Document {
   membershipType: string;
   membershipNumber?: string;
   isActive: boolean;
+  isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
