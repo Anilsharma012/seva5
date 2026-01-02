@@ -4,6 +4,7 @@ import { storage } from "./storage";
 const defaultMenuItems = [
   { title: "Dashboard", titleHindi: "डैशबोर्ड", path: "/admin/dashboard", iconKey: "LayoutDashboard", order: 1, group: "main" },
   { title: "Students", titleHindi: "छात्र", path: "/admin/students", iconKey: "GraduationCap", order: 2, group: "main" },
+  { title: "Members", titleHindi: "सदस्य", path: "/admin/members", iconKey: "Users", order: 2.5, group: "main" },
   { title: "Roll Numbers", titleHindi: "रोल नंबर", path: "/admin/roll-numbers", iconKey: "FileText", order: 3, group: "main" },
   { title: "Results", titleHindi: "परिणाम", path: "/admin/results", iconKey: "Award", order: 4, group: "main" },
   { title: "Admit Cards", titleHindi: "प्रवेश पत्र", path: "/admin/admit-cards", iconKey: "IdCard", order: 5, group: "main" },
