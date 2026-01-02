@@ -176,8 +176,10 @@ export async function registerRoutes(app: Express): Promise<void> {
         },
       }).catch(err => console.error("Admin notification email error:", err));
 
+      console.log("[REGISTER] Sending success response...");
       responseSent = true;
       res.status(201).json(responseData);
+      console.log("[REGISTER] Response sent successfully");
     } catch (error: any) {
       console.error("Registration error details:", error);
       if (!responseSent) {
