@@ -216,15 +216,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        const text = await res.text();
+        if (!text) {
+          return { success: false, error: "Server returned empty response" };
+        }
+        data = JSON.parse(text);
+      } catch (parseError) {
+        console.error("Failed to parse forgot password response:", parseError);
+        return { success: false, error: "Invalid response from server" };
+      }
 
       if (!res.ok) {
         return { success: false, error: data.error || "Failed to send reset email" };
       }
 
       return { success: true };
-    } catch (error) {
-      return { success: false, error: "Network error" };
+    } catch (error: any) {
+      console.error("Forgot password error:", error);
+      return { success: false, error: error?.message || "Network error" };
     }
   };
 
@@ -237,15 +248,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ token, newPassword }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        const text = await res.text();
+        if (!text) {
+          return { success: false, error: "Server returned empty response" };
+        }
+        data = JSON.parse(text);
+      } catch (parseError) {
+        console.error("Failed to parse reset password response:", parseError);
+        return { success: false, error: "Invalid response from server" };
+      }
 
       if (!res.ok) {
         return { success: false, error: data.error || "Failed to reset password" };
       }
 
       return { success: true };
-    } catch (error) {
-      return { success: false, error: "Network error" };
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      return { success: false, error: error?.message || "Network error" };
     }
   };
 
