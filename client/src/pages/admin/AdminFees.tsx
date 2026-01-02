@@ -281,7 +281,7 @@ export default function AdminFees() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => handleVerifyPayment(student.id)}
+                              onClick={() => openVerifyModal(student)}
                               data-testid={`button-verify-${student.id}`}
                             >
                               <Check className="h-4 w-4 mr-1" />
