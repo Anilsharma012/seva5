@@ -163,8 +163,15 @@ export default function StudentRegistration() {
           });
 
           if (!txResponse.ok) {
-            const txError = await txResponse.json();
-            console.warn("Payment transaction creation warning:", txError);
+            try {
+              const txErrorText = await txResponse.text();
+              if (txErrorText) {
+                const txError = JSON.parse(txErrorText);
+                console.warn("Payment transaction creation warning:", txError);
+              }
+            } catch (parseErr) {
+              console.warn("Could not parse payment error response:", parseErr);
+            }
           }
         } catch (txError) {
           console.error("Payment transaction creation failed:", txError);
