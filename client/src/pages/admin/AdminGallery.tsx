@@ -105,8 +105,8 @@ export default function AdminGallery() {
                         }),
                       });
                       const data = await response.json();
-                      // Capture uploadURL as image URL (presigned URLs work for GET after PUT)
-                      uploadedPathRef.current = data.uploadURL;
+                      // Capture fileURL for storing in database (for displaying images)
+                      uploadedPathRef.current = data.fileURL;
                       return {
                         method: "PUT",
                         url: data.uploadURL,
