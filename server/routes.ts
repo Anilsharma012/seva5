@@ -15,7 +15,7 @@ import {
   sendRollNumberNotificationEmail,
   sendPasswordResetEmail
 } from "./email";
-import { Member, PasswordResetToken } from "./models";
+import { Member, PasswordResetToken, MemberCard } from "./models";
 
 export async function registerRoutes(app: Express): Promise<void> {
   
