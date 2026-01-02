@@ -1513,6 +1513,11 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(403).json({ error: "Account is deactivated" });
       }
 
+      // Check if member is verified by admin
+      if (!member.isVerified) {
+        return res.status(403).json({ error: "Account pending admin verification. Please wait for approval. / खाता व्यवस्थापक सत्यापन की प्रतीक्षा में है।" });
+      }
+
       const isValid = await bcrypt.compare(password, member.password);
       if (!isValid) {
         return res.status(401).json({ error: "Invalid credentials" });
