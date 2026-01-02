@@ -239,6 +239,18 @@ export default function MemberRegistration() {
                   </p>
                 </div>
 
+                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 p-4 rounded-lg">
+                  <h4 className="font-semibold text-orange-900 dark:text-orange-200 mb-2">
+                    ⏳ Admin Approval Pending / व्यवस्थापक की मंजूरी की प्रतीक्षा है
+                  </h4>
+                  <p className="text-orange-800 dark:text-orange-300 text-sm mb-2">
+                    आपका भुगतान अभी सत्यापन के तहत है। कृपया अगले 24-48 घंटों में admin की मंजूरी के लिए प्रतीक्षा करें।
+                  </p>
+                  <p className="text-orange-800 dark:text-orange-300 text-sm">
+                    Approval के बाद आप अपने Email और Password से login कर सकेंगे।
+                  </p>
+                </div>
+
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
                   <p className="text-yellow-800 dark:text-yellow-200 text-sm">
                     <strong>Important / महत्वपूर्ण:</strong> कृपया अपना Email और Password सुरक्षित रखें।
@@ -250,8 +262,8 @@ export default function MemberRegistration() {
                   <Button variant="outline" onClick={() => navigate("/")} className="flex-1">
                     Home / होम
                   </Button>
-                  <Button onClick={() => navigate("/member/dashboard")} className="flex-1 bg-primary">
-                    Go to Dashboard / डैशबोर्ड पर जाएं
+                  <Button onClick={() => navigate("/member/login")} className="flex-1 bg-primary">
+                    Check Login Status / लॉगिन स्थिति जांचें
                   </Button>
                 </div>
               </CardContent>
@@ -277,13 +289,26 @@ export default function MemberRegistration() {
             <p className="text-muted-foreground mt-2">सदस्य रजिस्ट्रेशन फॉर्म</p>
           </div>
 
-          <Card className="shadow-elevated">
-            <CardHeader>
-              <CardTitle>Member Details / सदस्य जानकारी</CardTitle>
-              <CardDescription>कृपया सभी जानकारी सही-सही भरें</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex items-center justify-center gap-4 mb-8">
+            {[1, 2, 3].map((s) => (
+              <div key={s} className="flex items-center gap-2">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
+                  step >= s ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                }`}>
+                  {step > s ? <CheckCircle className="h-5 w-5" /> : s}
+                </div>
+                {s < 3 && <div className={`w-16 h-1 ${step > s ? "bg-primary" : "bg-muted"}`} />}
+              </div>
+            ))}
+          </div>
+
+          {step === 1 && (
+            <Card className="shadow-elevated">
+              <CardHeader>
+                <CardTitle>Member Details / सदस्य जानकारी</CardTitle>
+                <CardDescription>कृपया सभी जानकारी सही-सही भरें</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="memberName">Member Name / सदस्य का नाम *</Label>
@@ -380,12 +405,199 @@ export default function MemberRegistration() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full bg-primary" disabled={isProcessing}>
-                  {isProcessing ? "Processing..." : "Register / रजिस्टर करें"}
+                <div className="bg-primary/10 p-4 rounded-lg">
+                  <p className="text-lg font-semibold">
+                    Membership Fee / सदस्यता शुल्क: <span className="text-primary">Rs.{MEMBERSHIP_FEE}</span>
+                  </p>
+                </div>
+
+                <Button onClick={handleProceedToPayment} className="w-full bg-primary">
+                  Proceed to Payment / भुगतान करें
                 </Button>
-              </form>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
+
+          {step === 2 && (
+            <Card className="shadow-elevated">
+              <CardHeader>
+                <CardTitle>Payment / भुगतान</CardTitle>
+                <CardDescription>QR Code स्कैन करें या UPI ID पर भुगतान करें</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="bg-primary/10 p-4 rounded-lg text-center">
+                  <p className="text-lg text-muted-foreground">Membership Fee / सदस्यता शुल्क</p>
+                  <p className="text-3xl font-bold text-primary">Rs.{MEMBERSHIP_FEE}</p>
+                </div>
+
+                {paymentLoading ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {/* QR Code Section */}
+                    {hasQR && (
+                      <div className="text-center">
+                        <div className="flex items-center justify-center gap-2 mb-4">
+                          <QrCode className="h-5 w-5 text-primary" />
+                          <span className="font-medium">Scan QR Code / QR स्कैन करें</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-4 font-medium">
+                          Amount: Rs.{MEMBERSHIP_FEE} के लिए QR Code
+                        </p>
+                        <div className="bg-white p-4 rounded-lg inline-block shadow-md">
+                          <img
+                            src={paymentConfig.qrCodeUrl}
+                            alt="Payment QR Code"
+                            className="w-48 h-48 object-contain"
+                          />
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          PhonePe / Google Pay / Paytm / BHIM से स्कैन करें
+                        </p>
+                      </div>
+                    )}
+
+                    {/* UPI ID Section */}
+                    {hasUPI && (
+                      <div className="space-y-2">
+                        <Label>UPI ID</Label>
+                        <div className="flex gap-2">
+                          <Input value={paymentConfig.upiId} readOnly className="bg-muted font-mono" />
+                          <Button variant="outline" onClick={() => copyToClipboard(paymentConfig.upiId!)}>
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Bank Details Section */}
+                    {hasBank && (
+                      <div className="border-t pt-4 space-y-4">
+                        <h4 className="font-semibold flex items-center gap-2">
+                          <Building className="h-5 w-5" />
+                          Bank Details / बैंक विवरण
+                        </h4>
+                        <div className="bg-muted/50 rounded-lg p-4 text-sm space-y-2">
+                          <div className="flex flex-wrap justify-between gap-1">
+                            <span className="text-muted-foreground">Account Name:</span>
+                            <span className="font-medium">{paymentConfig.accountHolderName}</span>
+                          </div>
+                          <div className="flex flex-wrap justify-between gap-1">
+                            <span className="text-muted-foreground">Bank:</span>
+                            <span className="font-medium">{paymentConfig.bankName}</span>
+                          </div>
+                          <div className="flex flex-wrap justify-between gap-1">
+                            <span className="text-muted-foreground">Account No:</span>
+                            <span className="font-mono font-medium">{paymentConfig.accountNumber}</span>
+                          </div>
+                          <div className="flex flex-wrap justify-between gap-1">
+                            <span className="text-muted-foreground">IFSC:</span>
+                            <span className="font-mono font-medium">{paymentConfig.ifscCode}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* No Payment Config Warning */}
+                    {!hasQR && !hasUPI && !hasBank && (
+                      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-4 rounded-lg text-center">
+                        <p className="text-amber-700 dark:text-amber-300 text-sm">
+                          Payment configuration not available. Please contact admin.
+                          <br />
+                          भुगतान सेटिंग उपलब्ध नहीं है। कृपया एडमिन से संपर्क करें।
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="transactionId">Transaction ID / UTR Number *</Label>
+                  <Input
+                    id="transactionId"
+                    name="transactionId"
+                    value={formData.transactionId}
+                    onChange={handleChange}
+                    placeholder="Transaction/UTR ID दर्ज करें"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">भुगतान करने के बाद Transaction ID या UTR Number डालें</p>
+                </div>
+
+                <div className="flex gap-4">
+                  <Button variant="outline" onClick={() => setStep(1)} className="flex-1">Back / वापस</Button>
+                  <Button onClick={handlePaymentVerification} disabled={isProcessing} className="flex-1 bg-primary">
+                    {isProcessing ? "Processing..." : "Complete Registration"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {step === 3 && registrationData && (
+            <Card className="shadow-elevated">
+              <CardHeader className="text-center">
+                <div className="mx-auto w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                  <CheckCircle className="h-10 w-10 text-green-600" />
+                </div>
+                <CardTitle className="text-green-600">Registration Successful!</CardTitle>
+                <CardDescription>आपका रजिस्ट्रेशन सफलतापूर्वक हो गया है</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="bg-muted p-6 rounded-lg space-y-4">
+                  <div>
+                    <Label className="text-muted-foreground">Membership Number</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xl font-bold">{registrationData.membershipNumber}</span>
+                      <Button variant="ghost" size="sm" onClick={() => copyToClipboard(registrationData.membershipNumber)}>
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">Email / ईमेल</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xl font-bold">{registrationData.email}</span>
+                      <Button variant="ghost" size="sm" onClick={() => copyToClipboard(registrationData.email)}>
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    आपने जो password दिया था वही use करें login के लिए
+                  </p>
+                </div>
+
+                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 p-4 rounded-lg">
+                  <h4 className="font-semibold text-orange-900 dark:text-orange-200 mb-2">
+                    ⏳ Admin Approval Pending / व्यवस्थापक की मंजूरी की प्रतीक्षा है
+                  </h4>
+                  <p className="text-orange-800 dark:text-orange-300 text-sm mb-2">
+                    आपका भुगतान अभी सत्यापन के तहत है। कृपया अगले 24-48 घंटों में admin की मंजूरी के लिए प्रतीक्षा करें।
+                  </p>
+                  <p className="text-orange-800 dark:text-orange-300 text-sm">
+                    Approval के बाद आप अपने Email और Password से login कर सकेंगे।
+                  </p>
+                </div>
+
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
+                  <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+                    <strong>Important / महत्वपूर्ण:</strong> कृपया अपना Email और Password सुरक्षित रखें।
+                    आप इनका उपयोग Member Portal में Login करने के लिए करेंगे।
+                  </p>
+                </div>
+
+                <div className="flex gap-4">
+                  <Button variant="outline" onClick={() => navigate("/")} className="flex-1">Home / होम</Button>
+                  <Button onClick={() => navigate("/member/login")} className="flex-1 bg-primary">
+                    Check Login Status / लॉगिन स्थिति जांचें
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </Layout>
