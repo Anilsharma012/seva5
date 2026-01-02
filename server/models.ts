@@ -631,6 +631,29 @@ const MemberSchema = new Schema<IMember>({
   membershipNumber: { type: String, unique: true, sparse: true },
   isActive: { type: Boolean, default: true },
   isVerified: { type: Boolean, default: false },
+  iCardId: { type: Schema.Types.ObjectId, ref: 'MemberCard' },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const MemberCardSchema = new Schema<IMemberCard>({
+  memberId: { type: Schema.Types.ObjectId, ref: 'Member', required: true },
+  membershipNumber: { type: String, required: true },
+  memberName: { type: String, required: true },
+  memberEmail: { type: String, required: true },
+  memberPhone: { type: String, required: true },
+  memberCity: String,
+  memberAddress: String,
+  cardNumber: { type: String, unique: true, required: true },
+  qrCodeUrl: String,
+  cardImageUrl: String,
+  isGenerated: { type: Boolean, default: false },
+  validFrom: { type: String, default: () => new Date().toISOString().split('T')[0] },
+  validUntil: { type: String, default: () => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
+    return date.toISOString().split('T')[0];
+  }},
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
