@@ -1503,7 +1503,6 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.post("/api/auth/member/login", async (req, res) => {
     try {
       const { email, password } = req.body;
-      const { Member } = require('./models');
 
       const member = await Member.findOne({ email });
 
