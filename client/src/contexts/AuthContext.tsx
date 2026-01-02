@@ -137,7 +137,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(data),
       });
 
-      const result = await res.json();
+      let result;
+      try {
+        const text = await res.text();
+        if (!text) {
+          console.error("Empty response from server");
+          setIsLoading(false);
+          return { success: false, error: "Server returned empty response. Please try again." };
+        }
+        result = JSON.parse(text);
+      } catch (parseError) {
+        console.error("Failed to parse JSON response:", parseError);
+        setIsLoading(false);
+        return { success: false, error: "Invalid response from server. Please try again." };
+      }
 
       if (!res.ok) {
         setIsLoading(false);
