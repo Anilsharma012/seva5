@@ -458,7 +458,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.get("/api/my-profile", authMiddleware, async (req: AuthRequest, res) => {
     try {
       if (req.user?.role === "student") {
-        const student = await storage.getStudentById(parseInt(req.user.id));
+        const student = await storage.getStudentById(req.user.id);
         if (!student) return res.status(404).json({ error: "Student not found" });
         
         const results = await storage.getResultsByStudentId(student.id, true);
