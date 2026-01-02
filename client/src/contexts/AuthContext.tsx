@@ -68,7 +68,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (res.ok) {
-        const data = await res.json();
+        let data;
+        try {
+          const text = await res.text();
+          if (!text) throw new Error("Empty response");
+          data = JSON.parse(text);
+        } catch (parseError) {
+          console.error("Failed to parse current user response:", parseError);
+          localStorage.removeItem("auth_token");
+          setToken(null);
+          setIsLoading(false);
+          return;
+        }
+
         setUser({
           id: data._id || data.id,
           email: data.email,
@@ -79,7 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem("auth_token");
         setToken(null);
       }
-    } catch {
+    } catch (error) {
+      console.error("Failed to fetch current user:", error);
       localStorage.removeItem("auth_token");
       setToken(null);
     } finally {
