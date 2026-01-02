@@ -1589,8 +1589,6 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.post("/api/auth/member/reset-password", async (req, res) => {
     try {
       const { token, newPassword } = req.body;
-      const { PasswordResetToken } = require('./models');
-      const { Member } = require('./models');
 
       if (!token || !newPassword) {
         return res.status(400).json({ error: "Token and new password are required" });
