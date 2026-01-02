@@ -98,6 +98,11 @@ export interface IStorage {
   getAllMembershipCards(): Promise<MembershipCard[]>;
   updateMembershipCard(id: string, data: Partial<InsertMembershipCard>): Promise<MembershipCard | undefined>;
 
+  createMemberCard(data: InsertMemberCard): Promise<MemberCard>;
+  getMemberCardByMemberId(memberId: string): Promise<MemberCard | undefined>;
+  getMemberCardById(id: string): Promise<MemberCard | undefined>;
+  updateMemberCard(id: string, data: Partial<InsertMemberCard>): Promise<MemberCard | undefined>;
+
   createPage(data: InsertPage): Promise<Page>;
   getPageBySlug(slug: string): Promise<Page | undefined>;
   getAllPages(): Promise<Page[]>;
