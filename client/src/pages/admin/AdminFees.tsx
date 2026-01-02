@@ -46,6 +46,10 @@ export default function AdminFees() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [transactions, setTransactions] = useState<PaymentTransaction[]>([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
