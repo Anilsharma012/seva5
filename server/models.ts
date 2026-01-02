@@ -679,3 +679,4 @@ export const Service = mongoose.model<IService>('Service', ServiceSchema);
 export const GalleryImage = mongoose.model<IGalleryImage>('GalleryImage', GalleryImageSchema);
 export const PasswordResetToken = mongoose.model<IPasswordResetToken>('PasswordResetToken', PasswordResetTokenSchema);
 export const Member = mongoose.model<IMember>('Member', MemberSchema);
+export const MemberCard = mongoose.model<IMemberCard>('MemberCard', MemberCardSchema);
