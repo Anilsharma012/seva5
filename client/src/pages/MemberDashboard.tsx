@@ -202,6 +202,7 @@ export default function MemberDashboard() {
   const sidebarItems = [
     { id: "dashboard", icon: Users, label: "Dashboard", labelHi: "डैशबोर्ड" },
     { id: "payments", icon: CreditCard, label: "Payment Status", labelHi: "भुगतान स्थिति" },
+    { id: "icard", icon: ICardIcon, label: "I-Card", labelHi: "आई-कार्ड" },
     { id: "settings", icon: Settings, label: "Settings", labelHi: "सेटिंग्स" },
   ];
 
