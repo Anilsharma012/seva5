@@ -384,7 +384,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   app.get("/api/admit-cards/student/:studentId", authMiddleware, async (req: AuthRequest, res) => {
     try {
-      const admitCards = await storage.getAdmitCardsByStudentId(parseInt(req.params.studentId));
+      const admitCards = await storage.getAdmitCardsByStudentId(req.params.studentId);
       res.json(admitCards);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch admit cards" });
