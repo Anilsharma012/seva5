@@ -203,12 +203,12 @@ export async function registerRoutes(app: Express): Promise<void> {
         const { password, ...adminData } = admin;
         res.json({ ...adminData, role: "admin" });
       } else if (req.user?.role === "volunteer") {
-        const volunteer = await storage.getVolunteerAccountById(parseInt(req.user.id));
+        const volunteer = await storage.getVolunteerAccountById(req.user.id);
         if (!volunteer) return res.status(404).json({ error: "Volunteer not found" });
         const { password, ...volunteerData } = volunteer;
         res.json({ ...volunteerData, role: "volunteer" });
       } else {
-        const student = await storage.getStudentById(parseInt(req.user?.id || "0"));
+        const student = await storage.getStudentById(req.user?.id || "");
         if (!student) return res.status(404).json({ error: "Student not found" });
         const { password, ...studentData } = student;
         res.json({ ...studentData, role: "student" });
