@@ -117,7 +117,10 @@ export async function registerRoutes(app: Express): Promise<void> {
       const feeAmounts: Record<string, number> = { village: 99, block: 199, district: 299, haryana: 399 };
       const feeAmount = feeAmounts[feeLevel] || 99;
 
+      console.log("[REGISTER] Hashing password...");
       const hashedPassword = await bcrypt.hash(password, 10);
+
+      console.log("[REGISTER] Creating student in database...");
       const student = await storage.createStudent({
         email,
         password: hashedPassword,
@@ -136,11 +139,15 @@ export async function registerRoutes(app: Express): Promise<void> {
         feeAmount,
       });
 
+      console.log("[REGISTER] Student created:", { id: student?.id, email: student?.email });
+
       if (!student || !student.id) {
-        throw new Error("Failed to create student record");
+        throw new Error("Failed to create student record - no student ID returned");
       }
 
+      console.log("[REGISTER] Generating token...");
       const token = generateToken({ id: student.id.toString(), email: student.email, role: "student", name: student.fullName });
+      console.log("[REGISTER] Token generated successfully");
 
       const responseData = {
         token,
