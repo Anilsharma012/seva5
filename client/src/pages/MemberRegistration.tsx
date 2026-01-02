@@ -68,9 +68,13 @@ export default function MemberRegistration() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  // Get payment config for membership
+  const paymentConfig = paymentConfigs[0];
+  const hasQR = paymentConfig?.qrCodeUrl;
+  const hasUPI = paymentConfig?.upiId;
+  const hasBank = paymentConfig?.bankName;
+
+  const handleProceedToPayment = () => {
     if (!formData.memberName || !formData.email || !formData.password || !formData.phone) {
       toast({
         title: "कृपया सभी जानकारी भरें",
@@ -98,6 +102,19 @@ export default function MemberRegistration() {
       return;
     }
 
+    setStep(2);
+  };
+
+  const handlePaymentVerification = async () => {
+    if (!formData.transactionId) {
+      toast({
+        title: "Transaction ID आवश्यक है",
+        description: "कृपया Transaction ID दर्ज करें",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
@@ -107,26 +124,63 @@ export default function MemberRegistration() {
         fullName: formData.memberName,
         phone: formData.phone,
         city: formData.city,
+        address: formData.address,
       });
 
       if (result.success) {
+        // Create payment transaction for admin approval
+        try {
+          const txResponse = await fetch("/api/public/payment-transaction", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "membership",
+              name: formData.memberName,
+              email: formData.email,
+              phone: formData.phone,
+              amount: MEMBERSHIP_FEE,
+              transactionId: formData.transactionId,
+              paymentMethod: "upi",
+              purpose: `Member Registration - ₹${MEMBERSHIP_FEE}`,
+              address: formData.address,
+              city: formData.city,
+            }),
+          });
+
+          if (!txResponse.ok) {
+            try {
+              const txErrorText = await txResponse.text();
+              if (txErrorText) {
+                const txError = JSON.parse(txErrorText);
+                console.warn("Payment transaction creation warning:", txError);
+              }
+            } catch (parseErr) {
+              console.warn("Could not parse payment error response:", parseErr);
+            }
+          }
+        } catch (txError) {
+          console.error("Payment transaction creation failed:", txError);
+        }
+
         setRegistrationData({
           email: formData.email,
           membershipNumber: result.registrationNumber || "",
         });
+        setStep(3);
 
         toast({
           title: "रजिस्ट्रेशन सफल!",
-          description: "आपका रजिस्ट्रेशन पूरा हो गया है।",
+          description: "आपका रजिस्ट्रेशन पूरा हो गया है। भुगतान की पुष्टि होने पर लॉगिन कर सकते हैं।",
         });
       } else {
         throw new Error(result.error);
       }
     } catch (error: any) {
-      console.error("Registration error:", error);
+      console.error("Registration error details:", error);
+      const errorMessage = error?.message || "कुछ गलत हो गया। कृपया फिर से प्रयास करें।";
       toast({
         title: "रजिस्ट्रेशन विफल",
-        description: error.message || "कुछ गलत हो गया",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
