@@ -92,12 +92,14 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   app.post("/api/auth/student/register", async (req, res) => {
     let responseSent = false;
+    console.log("[REGISTER] Request received:", { email: req.body.email, class: req.body.class });
 
     try {
       const { email, password, fullName, phone, fatherName, motherName, address, city, pincode, dateOfBirth, gender, class: studentClass, feeLevel } = req.body;
 
       // Validation
       if (!email || !password || !fullName || !studentClass) {
+        console.log("[REGISTER] Validation failed - missing fields");
         responseSent = true;
         return res.status(400).json({ error: "Missing required fields: email, password, fullName, class" });
       }
