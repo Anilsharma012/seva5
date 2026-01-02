@@ -116,8 +116,8 @@ export default function AdminGallery() {
                     onComplete={(result) => {
                       const uploadedFile = result.successful?.[0];
                       if (uploadedFile && result.successful && result.successful.length > 0) {
-                        // Use the presigned URL captured in ref - it works for reading
-                        const imagePath = uploadedPathRef.current || `/objects/${uploadedFile.name}`;
+                        // Use the fileURL from server response for displaying the image
+                        const imagePath = uploadedPathRef.current || `/uploads/${uploadedFile.name}`;
                         setNewImage({...newImage, imageUrl: imagePath});
                         toast({ title: "Success", description: "Image uploaded successfully" });
                       }
