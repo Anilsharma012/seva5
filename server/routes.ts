@@ -1728,6 +1728,53 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // ============ ADMIN MEMBER MANAGEMENT ROUTES ============
+  app.post("/api/admin/members/:id/generate-icard", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const member = await Member.findById(req.params.id);
+      if (!member) {
+        return res.status(404).json({ error: "Member not found" });
+      }
+
+      // Check if I-Card already exists
+      let iCard = await storage.getMemberCardByMemberId(member._id.toString());
+
+      if (iCard) {
+        return res.json({ success: true, message: "I-Card already exists", iCard });
+      }
+
+      // Generate card number
+      const count = await MemberCard.countDocuments();
+      const cardNumber = `MWSS-CARD-${String(count + 1).padStart(6, "0")}`;
+
+      // Create I-Card
+      iCard = await storage.createMemberCard({
+        memberId: member._id.toString(),
+        membershipNumber: member.membershipNumber || "",
+        memberName: member.fullName,
+        memberEmail: member.email,
+        memberPhone: member.phone,
+        memberCity: member.city,
+        memberAddress: member.address,
+        cardNumber: cardNumber,
+        isGenerated: true,
+        validFrom: new Date().toISOString().split('T')[0],
+        validUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+      });
+
+      // Update member with iCard reference
+      await Member.findByIdAndUpdate(member._id, { iCardId: iCard.id });
+
+      res.json({
+        success: true,
+        message: "I-Card generated successfully",
+        iCard
+      });
+    } catch (error) {
+      console.error("Generate I-Card error:", error);
+      res.status(500).json({ error: "Failed to generate I-Card" });
+    }
+  });
+
   app.get("/api/admin/members", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
     try {
       const members = await Member.find().sort({ createdAt: -1 });
