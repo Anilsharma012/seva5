@@ -53,7 +53,10 @@ export default function MemberDashboard() {
   const navigate = useNavigate();
   const [member, setMember] = useState<MemberData | null>(null);
   const [transactions, setTransactions] = useState<PaymentTransaction[]>([]);
+  const [iCard, setICard] = useState<MemberCard | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [iCardLoading, setICardLoading] = useState(false);
+  const [iCardError, setICardError] = useState<string | undefined>(undefined);
   const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
