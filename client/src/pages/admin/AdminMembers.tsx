@@ -377,7 +377,7 @@ export default function AdminMembers() {
                   </>
                 ) : (
                   <>
-                    <CardIcon className="h-4 w-4 mr-2" />
+                    <IdCard className="h-4 w-4 mr-2" />
                     Generate I-Card
                   </>
                 )}
