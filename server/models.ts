@@ -630,6 +630,16 @@ const PasswordResetTokenSchema = new Schema<IPasswordResetToken>({
   createdAt: { type: Date, default: Date.now }
 });
 
+const ContactInfoSchema = new Schema<IContactInfo>({
+  address: String,
+  phone: String,
+  email: String,
+  otherInformation: String,
+  mapEmbedUrl: String,
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
 const MemberSchema = new Schema<IMember>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
