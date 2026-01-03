@@ -379,6 +379,12 @@ export default function Navbar() {
                   )}
                 </div>
               ))}
+              <Link to="/student/login" onClick={() => setIsOpen(false)}>
+                <Button variant="outline" className="w-full mt-2 border-blue-500 text-blue-600">
+                  <GraduationCap className="h-4 w-4 mr-2" />
+                  Student Login
+                </Button>
+              </Link>
               {admitCardEnabled && (
                 <Dialog open={isAdmitDialogOpen} onOpenChange={setIsAdmitDialogOpen}>
                   <DialogTrigger asChild>
