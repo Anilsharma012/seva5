@@ -598,6 +598,14 @@ export const insertGalleryImageSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
+export const insertContactInfoSchema = z.object({
+  address: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().email().optional(),
+  otherInformation: z.string().optional(),
+  mapEmbedUrl: z.string().optional(),
+});
+
 export type InsertAdmin = z.infer<typeof insertAdminSchema>;
 export type InsertStudent = z.infer<typeof insertStudentSchema>;
 export type InsertResult = z.infer<typeof insertResultSchema>;
