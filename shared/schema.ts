@@ -626,3 +626,4 @@ export type InsertPaymentTransaction = z.infer<typeof insertPaymentTransactionSc
 export type InsertTeamMember = z.infer<typeof insertTeamMemberSchema>;
 export type InsertService = z.infer<typeof insertServiceSchema>;
 export type InsertGalleryImage = z.infer<typeof insertGalleryImageSchema>;
+export type InsertContactInfo = z.infer<typeof insertContactInfoSchema>;
