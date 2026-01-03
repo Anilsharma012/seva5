@@ -1,6 +1,6 @@
 import {
   Admin, Student, Result, AdmitCard as AdmitCardType, Membership, MenuItem, AdminSetting, PaymentConfig,
-  ContentSection, VolunteerApplication, FeeStructure, MembershipCard, MemberCard, Page, ContactInquiry,
+  ContentSection, VolunteerApplication, FeeStructure, MembershipCard, MemberCard, Page, ContactInquiry, ContactInfo,
   VolunteerAccount, PaymentTransaction, TeamMember, Service, GalleryImage,
   InsertAdmin, InsertStudent, InsertResult, InsertAdmitCard, InsertMembership,
   InsertMenuItem, InsertAdminSetting, InsertPaymentConfig, InsertContentSection,
@@ -14,7 +14,7 @@ import {
   VolunteerApplication as VolunteerApplicationModel, FeeStructure as FeeStructureModel,
   MembershipCard as MembershipCardModel, MemberCard as MemberCardModel, Page as PageModel, ContactInquiry as ContactInquiryModel,
   VolunteerAccount as VolunteerAccountModel, PaymentTransaction as PaymentTransactionModel,
-  TeamMember as TeamMemberModel, Service as ServiceModel, GalleryImage as GalleryImageModel
+  TeamMember as TeamMemberModel, Service as ServiceModel, GalleryImage as GalleryImageModel, ContactInfo as ContactInfoModel
 } from "./models";
 
 function toPlain<T>(doc: any): T {
