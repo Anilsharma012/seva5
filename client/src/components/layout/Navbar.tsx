@@ -284,6 +284,12 @@ export default function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex items-center gap-3">
+            <Link to="/student/login">
+              <Button variant="outline" className="border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950">
+                <GraduationCap className="h-4 w-4 mr-2" />
+                Student Login
+              </Button>
+            </Link>
             {admitCardEnabled && (
               <Dialog open={isAdmitDialogOpen} onOpenChange={setIsAdmitDialogOpen}>
                 <DialogTrigger asChild>
