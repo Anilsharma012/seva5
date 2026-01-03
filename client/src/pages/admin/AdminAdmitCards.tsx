@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { IdCard, Plus, Search, Download, Loader2, Users } from "lucide-react";
+import { IdCard, Plus, Search, Download, Loader2, Users, Upload, X } from "lucide-react";
 
 interface Student {
   id: number;
