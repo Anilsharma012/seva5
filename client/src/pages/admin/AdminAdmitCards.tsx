@@ -33,6 +33,7 @@ interface AdmitCard {
   examName: string;
   fileUrl: string;
   fileName: string;
+  studentPhotoUrl?: string;
   uploadedAt: string;
 }
 
