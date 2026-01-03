@@ -628,6 +628,21 @@ export class DatabaseStorage implements IStorage {
   async deleteGalleryImage(id: string): Promise<void> {
     await GalleryImageModel.findByIdAndDelete(id);
   }
+
+  async getContactInfo(): Promise<ContactInfo | undefined> {
+    const contactInfo = await ContactInfoModel.findOne().sort({ createdAt: -1 });
+    return contactInfo ? toPlain<ContactInfo>(contactInfo) : undefined;
+  }
+
+  async updateContactInfo(data: Partial<ContactInfo>): Promise<ContactInfo | undefined> {
+    let contactInfo = await ContactInfoModel.findOne();
+    if (!contactInfo) {
+      contactInfo = await ContactInfoModel.create(data);
+    } else {
+      contactInfo = await ContactInfoModel.findByIdAndUpdate(contactInfo._id, { ...data, updatedAt: new Date() }, { new: true });
+    }
+    return contactInfo ? toPlain<ContactInfo>(contactInfo) : undefined;
+  }
 }
 
 export const storage = new DatabaseStorage();
