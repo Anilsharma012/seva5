@@ -391,6 +391,7 @@ const AdmitCardSchema = new Schema<IAdmitCard>({
   fileName: { type: String, required: true },
   termsEnglish: String,
   termsHindi: String,
+  studentPhotoUrl: String,
   uploadedAt: { type: Date, default: Date.now }
 });
 
