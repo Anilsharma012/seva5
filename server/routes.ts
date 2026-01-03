@@ -871,6 +871,33 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  app.get("/api/public/contact-info", async (req, res) => {
+    try {
+      const contactInfo = await storage.getContactInfo();
+      res.json(contactInfo || {});
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch contact info" });
+    }
+  });
+
+  app.get("/api/admin/contact-info", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const contactInfo = await storage.getContactInfo();
+      res.json(contactInfo || {});
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch contact info" });
+    }
+  });
+
+  app.patch("/api/admin/contact-info", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const contactInfo = await storage.updateContactInfo(req.body);
+      res.json(contactInfo || {});
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update contact info" });
+    }
+  });
+
   app.get("/api/admin/pages", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
     try {
       const pages = await storage.getAllPages();
