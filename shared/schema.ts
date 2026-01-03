@@ -330,6 +330,17 @@ export interface GalleryImage {
   updatedAt: Date;
 }
 
+export interface ContactInfo {
+  id: string;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  otherInformation?: string | null;
+  mapEmbedUrl?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export const insertAdminSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
