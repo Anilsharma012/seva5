@@ -249,7 +249,7 @@ export default function AdminAdmitCards() {
       <div class="row"><span class="label">Father's Name:</span><span class="value">${student.fatherName || 'N/A'}</span></div>
       <div class="row"><span class="label">Class:</span><span class="value">${student.class}</span></div>
     </div>
-    <div class="details-right">Photo</div>
+    <div class="details-right">${ac.studentPhotoUrl ? `<img src="${ac.studentPhotoUrl}" style="width: 100%; height: 100%; object-fit: cover;" alt="Student Photo" />` : 'Photo'}</div>
   </div>
   
   <div class="exam-info">
