@@ -327,6 +327,16 @@ export interface IMemberCard extends Document {
   updatedAt: Date;
 }
 
+export interface IContactInfo extends Document {
+  address?: string;
+  phone?: string;
+  email?: string;
+  otherInformation?: string;
+  mapEmbedUrl?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const AdminSchema = new Schema<IAdmin>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
