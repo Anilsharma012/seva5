@@ -390,6 +390,7 @@ export const insertAdmitCardSchema = z.object({
   fileName: z.string(),
   termsEnglish: z.string().optional(),
   termsHindi: z.string().optional(),
+  studentPhotoUrl: z.string().optional(),
 });
 
 export const insertMembershipSchema = z.object({
