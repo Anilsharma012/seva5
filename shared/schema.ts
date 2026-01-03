@@ -66,6 +66,7 @@ export interface AdmitCard {
   fileName: string;
   termsEnglish?: string | null;
   termsHindi?: string | null;
+  studentPhotoUrl?: string | null;
   uploadedAt: Date;
 }
 
