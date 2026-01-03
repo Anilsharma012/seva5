@@ -146,6 +146,9 @@ export interface IStorage {
   getActiveGalleryImages(): Promise<GalleryImage[]>;
   updateGalleryImage(id: string, data: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined>;
   deleteGalleryImage(id: string): Promise<void>;
+
+  getContactInfo(): Promise<ContactInfo | undefined>;
+  updateContactInfo(data: Partial<ContactInfo>): Promise<ContactInfo | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
