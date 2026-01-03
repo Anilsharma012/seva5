@@ -46,6 +46,7 @@ import AdminContent from "./pages/admin/AdminContent";
 import AdminPages from "./pages/admin/AdminPages";
 import AdminPayments from "./pages/admin/AdminPayments";
 import AdminContactInquiries from "./pages/admin/AdminContactInquiries";
+import AdminContactInformation from "./pages/admin/AdminContactInformation";
 import AdminTransactions from "./pages/admin/AdminTransactions";
 
 
