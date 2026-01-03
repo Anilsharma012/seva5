@@ -53,6 +53,7 @@ export interface IAdmitCard extends Document {
   fileName: string;
   termsEnglish?: string;
   termsHindi?: string;
+  studentPhotoUrl?: string;
   uploadedAt: Date;
 }
 
