@@ -46,6 +46,7 @@ export default function AdminAdmitCards() {
   const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const admitCardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -55,6 +56,7 @@ export default function AdminAdmitCards() {
     examDate: "",
     examTime: "10:00 AM - 12:00 PM",
     examCenter: "",
+    studentPhotoUrl: "",
   });
 
   const [bulkFormData, setBulkFormData] = useState({
