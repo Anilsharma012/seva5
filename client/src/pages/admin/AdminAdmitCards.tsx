@@ -114,15 +114,16 @@ export default function AdminAdmitCards() {
 
       const res = await fetch("/api/admit-cards", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` 
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           studentId: formData.studentId,
           examName: formData.examName,
           fileUrl: fileData,
           fileName: `admit_card_${student.rollNumber || student.registrationNumber}.json`,
+          studentPhotoUrl: formData.studentPhotoUrl || undefined,
         }),
       });
 
