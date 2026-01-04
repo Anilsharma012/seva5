@@ -37,6 +37,14 @@ export default function AdminContactInformation() {
     email: "",
     otherInformation: "",
     mapEmbedUrl: "",
+    socialMedia: {
+      facebook: "",
+      twitter: "",
+      instagram: "",
+      linkedin: "",
+      youtube: "",
+      whatsapp: "",
+    },
   });
 
   useEffect(() => {
