@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Plus, Search, Check, Download } from "lucide-react";
+import { Users, Plus, Search, Check, Download, X } from "lucide-react";
 
 const membershipLevels = [
   { id: "regular", name: "Village Level / ग्राम स्तर", amount: 99 },
