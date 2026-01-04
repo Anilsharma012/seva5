@@ -1,4 +1,4 @@
-import { Student, Member, VolunteerAccountModel } from "../models";
+import { Student, Member, VolunteerAccount } from "../models";
 import { log } from "../vite";
 
 export async function startAccountDeletionJob() {
