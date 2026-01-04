@@ -48,6 +48,7 @@ app.use((req, res, next) => {
 (async () => {
   await connectDB();
   await seedDatabase();
+  startAccountDeletionJob();
   registerObjectStorageRoutes(app);
   await registerRoutes(app);
 
