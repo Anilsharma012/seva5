@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, Heart, Phone, UserPlus, IdCard, Download, Loader2 } from "lucide-react";
+import { Menu, X, ChevronDown, Heart, Phone, UserPlus, IdCard, Download, Loader2, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
