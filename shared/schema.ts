@@ -386,6 +386,10 @@ export const insertStudentSchema = z.object({
   feeAmount: z.number().optional(),
   feePaid: z.boolean().optional(),
   isActive: z.boolean().optional(),
+  registrationDate: z.date().optional(),
+  expiryDate: z.date().optional(),
+  termsAccepted: z.boolean().optional(),
+  termsAcceptedAt: z.date().optional(),
 });
 
 export const insertResultSchema = z.object({
