@@ -899,6 +899,15 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Terms & Conditions API
+  app.get("/api/public/terms-and-conditions", async (req, res) => {
+    try {
+      const tac = await storage.getAllTermsAndConditions();
+      res.json(tac);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch terms and conditions" });
+    }
+  });
+
   app.get("/api/public/terms-and-conditions/:type", async (req, res) => {
     try {
       const tac = await storage.getTermsAndConditionsByType(req.params.type);
