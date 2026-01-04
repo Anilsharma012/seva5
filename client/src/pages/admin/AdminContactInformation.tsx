@@ -6,7 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Phone, Mail, MapPin, Info } from "lucide-react";
+import { Loader2, Phone, Mail, MapPin, Info, Share2 } from "lucide-react";
+
+interface SocialMedia {
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
+  linkedin?: string;
+  youtube?: string;
+  whatsapp?: string;
+}
 
 interface ContactInfo {
   id?: string;
@@ -15,6 +24,7 @@ interface ContactInfo {
   email?: string;
   otherInformation?: string;
   mapEmbedUrl?: string;
+  socialMedia?: SocialMedia;
 }
 
 export default function AdminContactInformation() {
