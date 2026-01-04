@@ -19,6 +19,7 @@ import Volunteer from "./pages/Volunteer";
 import VolunteerLogin from "./pages/VolunteerLogin";
 import VolunteerDashboard from "./pages/VolunteerDashboard";
 import Membership from "./pages/Membership";
+import TermsAndConditions from "./pages/TermsAndConditions";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/AdminLogin";
 import StudentLogin from "./pages/StudentLogin";
@@ -74,6 +75,7 @@ const App = () => (
             <Route path="/volunteer/login" element={<VolunteerLogin />} />
             <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} />
             <Route path="/membership" element={<Membership />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             {/* Auth Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/student/login" element={<StudentLogin />} />

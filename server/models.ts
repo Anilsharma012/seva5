@@ -347,6 +347,14 @@ export interface IContactInfo extends Document {
   email?: string;
   otherInformation?: string;
   mapEmbedUrl?: string;
+  socialMedia?: {
+    facebook?: string;
+    twitter?: string;
+    instagram?: string;
+    linkedin?: string;
+    youtube?: string;
+    whatsapp?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -667,6 +675,14 @@ const ContactInfoSchema = new Schema<IContactInfo>({
   email: String,
   otherInformation: String,
   mapEmbedUrl: String,
+  socialMedia: {
+    facebook: String,
+    twitter: String,
+    instagram: String,
+    linkedin: String,
+    youtube: String,
+    whatsapp: String,
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

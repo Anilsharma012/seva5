@@ -132,6 +132,7 @@ export default function AdminGallery() {
                             method: "PUT",
                             headers: {
                               "Content-Type": file.type || "application/octet-stream",
+                              Authorization: `Bearer ${token}`
                             },
                             body: file,
                           });

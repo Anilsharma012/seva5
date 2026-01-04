@@ -109,6 +109,20 @@ export default function AdminVolunteers() {
     },
   });
 
+  const deleteAccountMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("DELETE", `/api/admin/volunteer-accounts/${id}`);
+    },
+    onSuccess: () => {
+      toast({ title: "Success / सफल", description: "Volunteer account deleted / स्वयंसेवक खाता हटाया गया" });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/volunteer-accounts"] });
+      setAccountDialogOpen(false);
+    },
+    onError: () => {
+      toast({ title: "Error / त्रुटि", description: "Failed to delete account / खाता हटाने में विफल", variant: "destructive" });
+    },
+  });
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved": return <Badge className="bg-green-500">Approved / स्वीकृत</Badge>;
@@ -195,6 +209,9 @@ export default function AdminVolunteers() {
                             )}
                             <Button size="icon" variant="outline" className={account.isActive ? "text-red-600" : "text-green-600"} onClick={() => updateAccountMutation.mutate({ id: account.id, isActive: !account.isActive })} disabled={updateAccountMutation.isPending} data-testid={`button-toggle-active-${account.id}`}>
                               {account.isActive ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                            </Button>
+                            <Button size="icon" variant="destructive" onClick={() => { if (confirm("Are you sure? / क्या आप सुनिश्चित हैं?")) deleteAccountMutation.mutate(account.id); }} disabled={deleteAccountMutation.isPending} data-testid={`button-delete-account-${account.id}`}>
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
@@ -337,6 +354,9 @@ export default function AdminVolunteers() {
                     ) : (
                       <><Check className="h-4 w-4 mr-2" /> Activate / सक्रिय</>
                     )}
+                  </Button>
+                  <Button variant="destructive" onClick={() => { if (confirm("Are you sure you want to delete this volunteer account? / क्या आप इस स्वयंसेवक खाते को हटाना सुनिश्चित हैं?")) deleteAccountMutation.mutate(selectedAccount.id); }} disabled={deleteAccountMutation.isPending} data-testid="button-dialog-delete-account">
+                    <Trash2 className="h-4 w-4 mr-2" /> Delete / हटाएं
                   </Button>
                 </div>
               </div>

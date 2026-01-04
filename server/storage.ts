@@ -517,6 +517,10 @@ export class DatabaseStorage implements IStorage {
     return account ? toPlain<VolunteerAccount>(account) : undefined;
   }
 
+  async deleteVolunteerAccount(id: string): Promise<void> {
+    await VolunteerAccountModel.findByIdAndDelete(id);
+  }
+
   async createPaymentTransaction(data: InsertPaymentTransaction): Promise<PaymentTransaction> {
     const transaction = await PaymentTransactionModel.create(data);
     return toPlain<PaymentTransaction>(transaction);
