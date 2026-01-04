@@ -7,6 +7,7 @@ import { registerObjectStorageRoutes } from "./replit_integrations/object_storag
 import { setupVite, serveStatic, serveIndexHtmlFallback, log } from "./vite";
 import { connectDB } from "./db";
 import { seedDatabase } from "./seed";
+import { startAccountDeletionJob } from "./jobs/accountDeletionJob";
 
 const app = express();
 app.use(express.json());
