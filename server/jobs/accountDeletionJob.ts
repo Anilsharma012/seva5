@@ -31,7 +31,7 @@ export async function startAccountDeletionJob() {
       }
 
       // Delete expired volunteer accounts
-      const expiredVolunteers = await VolunteerAccountModel.deleteMany({
+      const expiredVolunteers = await VolunteerAccount.deleteMany({
         createdAt: { $lt: oneMonthAgo },
         isActive: true
       });
