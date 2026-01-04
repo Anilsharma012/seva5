@@ -648,6 +648,26 @@ export class DatabaseStorage implements IStorage {
     }
     return contactInfo ? toPlain<ContactInfo>(contactInfo) : undefined;
   }
+
+  async createTermsAndConditions(data: InsertTermsAndConditions): Promise<TermsAndConditions> {
+    const termsAndConditions = await TermsAndConditionsModel.create(data);
+    return toPlain<TermsAndConditions>(termsAndConditions);
+  }
+
+  async getTermsAndConditionsByType(type: string): Promise<TermsAndConditions | undefined> {
+    const tac = await TermsAndConditionsModel.findOne({ type, isActive: true }).sort({ version: -1 });
+    return tac ? toPlain<TermsAndConditions>(tac) : undefined;
+  }
+
+  async getAllTermsAndConditions(): Promise<TermsAndConditions[]> {
+    const tac = await TermsAndConditionsModel.find().sort({ type: 1, version: -1 });
+    return toPlainArray<TermsAndConditions>(tac);
+  }
+
+  async updateTermsAndConditions(id: string, data: Partial<InsertTermsAndConditions>): Promise<TermsAndConditions | undefined> {
+    const tac = await TermsAndConditionsModel.findByIdAndUpdate(id, { ...data, updatedAt: new Date() }, { new: true });
+    return tac ? toPlain<TermsAndConditions>(tac) : undefined;
+  }
 }
 
 export const storage = new DatabaseStorage();
