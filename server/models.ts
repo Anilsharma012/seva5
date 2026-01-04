@@ -310,6 +310,15 @@ export interface IMember extends Document {
   isActive: boolean;
   isVerified: boolean;
   iCardId?: mongoose.Types.ObjectId;
+  status: 'pending' | 'approved' | 'rejected' | 'expired';
+  membershipStartDate: Date;
+  membershipExpiryDate: Date;
+  termsAccepted: boolean;
+  termsAcceptedAt?: Date;
+  approvalStatus: 'pending' | 'approved' | 'rejected';
+  approvedBy?: mongoose.Types.ObjectId;
+  approvedAt?: Date;
+  adminNotes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
