@@ -346,6 +346,19 @@ export interface ContactInfo {
   updatedAt: Date;
 }
 
+export interface TermsAndConditions {
+  id: string;
+  type: 'student' | 'membership' | 'donation' | 'general';
+  titleEnglish: string;
+  titleHindi?: string | null;
+  contentEnglish: string;
+  contentHindi?: string | null;
+  version: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export const insertAdminSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
