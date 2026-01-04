@@ -149,6 +149,11 @@ export interface IStorage {
 
   getContactInfo(): Promise<ContactInfo | undefined>;
   updateContactInfo(data: Partial<ContactInfo>): Promise<ContactInfo | undefined>;
+
+  createTermsAndConditions(data: InsertTermsAndConditions): Promise<TermsAndConditions>;
+  getTermsAndConditionsByType(type: string): Promise<TermsAndConditions | undefined>;
+  getAllTermsAndConditions(): Promise<TermsAndConditions[]>;
+  updateTermsAndConditions(id: string, data: Partial<InsertTermsAndConditions>): Promise<TermsAndConditions | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
