@@ -1131,7 +1131,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       }
       const account = await storage.updateVolunteerAccount(req.params.id, updates);
       if (!account) return res.status(404).json({ error: "Volunteer account not found" });
-      
+
       // Send approval email if volunteer is approved
       if (req.body.isApproved === true && account.email) {
         sendApprovalEmail({
@@ -1144,11 +1144,23 @@ export async function registerRoutes(app: Express): Promise<void> {
           },
         }).catch(err => console.error("Volunteer approval email error:", err));
       }
-      
+
       const { password, ...accountData } = account;
       res.json(accountData);
     } catch (error) {
       res.status(500).json({ error: "Failed to update volunteer account" });
+    }
+  });
+
+  app.delete("/api/admin/volunteer-accounts/:id", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const account = await storage.getVolunteerAccountById(req.params.id);
+      if (!account) return res.status(404).json({ error: "Volunteer account not found" });
+
+      await storage.deleteVolunteerAccount(req.params.id);
+      res.json({ success: true, message: "Volunteer account deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete volunteer account" });
     }
   });
 
