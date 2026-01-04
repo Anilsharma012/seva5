@@ -75,6 +75,7 @@ const App = () => (
             <Route path="/volunteer/login" element={<VolunteerLogin />} />
             <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} />
             <Route path="/membership" element={<Membership />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             {/* Auth Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/student/login" element={<StudentLogin />} />
