@@ -363,6 +363,44 @@ export default function StudentRegistration() {
                   </p>
                 </div>
 
+                <div className="flex items-start space-x-3 border-l-4 border-yellow-500 bg-yellow-50 p-4 rounded">
+                  <Checkbox
+                    id="terms"
+                    checked={termsAccepted}
+                    onCheckedChange={(checked) => setTermsAccepted(checked === true)}
+                    data-testid="checkbox-terms"
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="terms" className="text-sm font-medium cursor-pointer">
+                      मैंने Terms & Conditions को पढ़ा और स्वीकार किया हूं / I have read and agree to Terms & Conditions *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowTermsModal(true)}
+                      className="text-xs text-secondary hover:underline mt-1"
+                    >
+                      View Terms & Conditions
+                    </button>
+                  </div>
+                </div>
+
+                <Dialog open={showTermsModal} onOpenChange={setShowTermsModal}>
+                  <DialogContent className="max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Terms & Conditions / शर्तें और शैतियां</DialogTitle>
+                    </DialogHeader>
+                    <div className="prose prose-sm max-w-none text-sm space-y-4">
+                      {termsContent ? (
+                        <div dangerouslySetInnerHTML={{ __html: termsContent }} />
+                      ) : (
+                        <div className="text-center text-muted-foreground py-8">
+                          <p>Loading Terms & Conditions...</p>
+                        </div>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
                 <Button onClick={handleProceedToPayment} className="w-full bg-secondary" data-testid="button-proceed-payment">
                   Proceed to Payment / भुगतान करें
                 </Button>
