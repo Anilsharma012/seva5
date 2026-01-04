@@ -392,6 +392,10 @@ const StudentSchema = new Schema<IStudent>({
   feePaid: { type: Boolean, default: false },
   paymentDate: Date,
   isActive: { type: Boolean, default: true },
+  registrationDate: { type: Date, default: Date.now },
+  expiryDate: { type: Date, default: () => { const d = new Date(); d.setMonth(d.getMonth() + 1); return d; } },
+  termsAccepted: { type: Boolean, default: false },
+  termsAcceptedAt: Date,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
