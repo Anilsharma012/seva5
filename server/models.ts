@@ -338,6 +338,18 @@ export interface IContactInfo extends Document {
   updatedAt: Date;
 }
 
+export interface ITermsAndConditions extends Document {
+  type: 'student' | 'membership' | 'donation' | 'general';
+  titleEnglish: string;
+  titleHindi?: string;
+  contentEnglish: string;
+  contentHindi?: string;
+  version: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const AdminSchema = new Schema<IAdmin>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
