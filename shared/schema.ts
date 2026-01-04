@@ -629,6 +629,16 @@ export const insertContactInfoSchema = z.object({
   mapEmbedUrl: z.string().optional(),
 });
 
+export const insertTermsAndConditionsSchema = z.object({
+  type: z.enum(['student', 'membership', 'donation', 'general']),
+  titleEnglish: z.string(),
+  titleHindi: z.string().optional(),
+  contentEnglish: z.string(),
+  contentHindi: z.string().optional(),
+  version: z.number().optional(),
+  isActive: z.boolean().optional(),
+});
+
 export type InsertAdmin = z.infer<typeof insertAdminSchema>;
 export type InsertStudent = z.infer<typeof insertStudentSchema>;
 export type InsertResult = z.infer<typeof insertResultSchema>;
