@@ -109,6 +109,20 @@ export default function AdminVolunteers() {
     },
   });
 
+  const deleteAccountMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("DELETE", `/api/admin/volunteer-accounts/${id}`);
+    },
+    onSuccess: () => {
+      toast({ title: "Success / सफल", description: "Volunteer account deleted / स्वयंसेवक खाता हटाया गया" });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/volunteer-accounts"] });
+      setAccountDialogOpen(false);
+    },
+    onError: () => {
+      toast({ title: "Error / त्रुटि", description: "Failed to delete account / खाता हटाने में विफल", variant: "destructive" });
+    },
+  });
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved": return <Badge className="bg-green-500">Approved / स्वीकृत</Badge>;
