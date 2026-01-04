@@ -108,6 +108,14 @@ export default function AdminContactInformation() {
         email: data.email || "",
         otherInformation: data.otherInformation || "",
         mapEmbedUrl: data.mapEmbedUrl || "",
+        socialMedia: {
+          facebook: data.socialMedia?.facebook || "",
+          twitter: data.socialMedia?.twitter || "",
+          instagram: data.socialMedia?.instagram || "",
+          linkedin: data.socialMedia?.linkedin || "",
+          youtube: data.socialMedia?.youtube || "",
+          whatsapp: data.socialMedia?.whatsapp || "",
+        },
       });
 
       toast({ title: "Success", description: "Contact information updated successfully" });
