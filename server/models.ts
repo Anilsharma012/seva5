@@ -29,6 +29,10 @@ export interface IStudent extends Document {
   feePaid: boolean;
   paymentDate?: Date;
   isActive: boolean;
+  registrationDate: Date;
+  expiryDate: Date;
+  termsAccepted: boolean;
+  termsAcceptedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
