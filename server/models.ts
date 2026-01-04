@@ -347,6 +347,14 @@ export interface IContactInfo extends Document {
   email?: string;
   otherInformation?: string;
   mapEmbedUrl?: string;
+  socialMedia?: {
+    facebook?: string;
+    twitter?: string;
+    instagram?: string;
+    linkedin?: string;
+    youtube?: string;
+    whatsapp?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
