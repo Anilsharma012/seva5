@@ -64,6 +64,21 @@ export default function StudentRegistration() {
     fetchPaymentConfigs();
   }, []);
 
+  useEffect(() => {
+    const fetchTermsAndConditions = async () => {
+      try {
+        const res = await fetch("/api/public/terms-and-conditions/student");
+        if (res.ok) {
+          const data = await res.json();
+          setTermsContent(data.contentEnglish || "");
+        }
+      } catch (error) {
+        console.error("Error fetching terms and conditions:", error);
+      }
+    };
+    fetchTermsAndConditions();
+  }, []);
+
   const [formData, setFormData] = useState({
     studentName: "",
     fatherName: "",
