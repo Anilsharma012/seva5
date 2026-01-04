@@ -103,6 +103,10 @@ export default function AdminGallery() {
                         try {
                           const token = localStorage.getItem("auth_token");
 
+                          if (!token) {
+                            throw new Error("Authentication token not found. Please log in again.");
+                          }
+
                           // Step 1: Request upload URL from server
                           const urlResponse = await fetch("/api/uploads/request-url", {
                             method: "POST",
@@ -112,14 +116,13 @@ export default function AdminGallery() {
                             },
                             body: JSON.stringify({
                               name: file.name,
-                              size: file.size,
                               contentType: file.type,
                             }),
                           });
 
                           if (!urlResponse.ok) {
-                            const error = await urlResponse.json();
-                            throw new Error(error.error || "Failed to request upload URL");
+                            const errorData = await urlResponse.json().catch(() => ({ error: urlResponse.statusText }));
+                            throw new Error(errorData.error || `Request failed with status ${urlResponse.status}`);
                           }
 
                           const { uploadURL, fileURL } = await urlResponse.json();
@@ -129,13 +132,12 @@ export default function AdminGallery() {
                             method: "PUT",
                             headers: {
                               "Content-Type": file.type || "application/octet-stream",
-                              Authorization: `Bearer ${token}`
                             },
                             body: file,
                           });
 
                           if (!uploadResponse.ok) {
-                            throw new Error("Failed to upload file");
+                            throw new Error(`Upload failed with status ${uploadResponse.status}`);
                           }
 
                           // Step 3: Store the fileURL for later use
@@ -147,9 +149,10 @@ export default function AdminGallery() {
                           e.target.value = "";
                         } catch (error) {
                           console.error("Upload error:", error);
+                          const errorMessage = error instanceof Error ? error.message : "Failed to upload image";
                           toast({
                             title: "Error",
-                            description: error instanceof Error ? error.message : "Failed to upload image",
+                            description: errorMessage,
                             variant: "destructive"
                           });
                         } finally {
