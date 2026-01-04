@@ -898,6 +898,45 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Terms & Conditions API
+  app.get("/api/public/terms-and-conditions/:type", async (req, res) => {
+    try {
+      const tac = await storage.getTermsAndConditionsByType(req.params.type);
+      if (!tac) return res.status(404).json({ error: "Terms and conditions not found" });
+      res.json(tac);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch terms and conditions" });
+    }
+  });
+
+  app.get("/api/admin/terms-and-conditions", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const tac = await storage.getAllTermsAndConditions();
+      res.json(tac);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch terms and conditions" });
+    }
+  });
+
+  app.post("/api/admin/terms-and-conditions", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const validated = insertTermsAndConditionsSchema.parse(req.body);
+      const tac = await storage.createTermsAndConditions(validated);
+      res.status(201).json(tac);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid terms and conditions data" });
+    }
+  });
+
+  app.patch("/api/admin/terms-and-conditions/:id", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const tac = await storage.updateTermsAndConditions(req.params.id, req.body);
+      res.json(tac || {});
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update terms and conditions" });
+    }
+  });
+
   app.get("/api/admin/pages", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
     try {
       const pages = await storage.getAllPages();
