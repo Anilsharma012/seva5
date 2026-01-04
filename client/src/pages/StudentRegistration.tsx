@@ -40,6 +40,9 @@ export default function StudentRegistration() {
   const [registrationData, setRegistrationData] = useState<{ email: string; registrationNumber: string } | null>(null);
   const [paymentConfigs, setPaymentConfigs] = useState<PaymentConfig[]>([]);
   const [paymentLoading, setPaymentLoading] = useState(true);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsContent, setTermsContent] = useState<string>("");
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { signup } = useAuth();
