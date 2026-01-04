@@ -40,6 +40,10 @@ export interface Student {
   feePaid: boolean;
   paymentDate?: Date | null;
   isActive: boolean;
+  registrationDate: Date;
+  expiryDate: Date;
+  termsAccepted: boolean;
+  termsAcceptedAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
