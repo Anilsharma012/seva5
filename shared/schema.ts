@@ -40,6 +40,10 @@ export interface Student {
   feePaid: boolean;
   paymentDate?: Date | null;
   isActive: boolean;
+  registrationDate: Date;
+  expiryDate: Date;
+  termsAccepted: boolean;
+  termsAcceptedAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -66,6 +70,7 @@ export interface AdmitCard {
   fileName: string;
   termsEnglish?: string | null;
   termsHindi?: string | null;
+  studentPhotoUrl?: string | null;
   uploadedAt: Date;
 }
 
@@ -330,6 +335,30 @@ export interface GalleryImage {
   updatedAt: Date;
 }
 
+export interface ContactInfo {
+  id: string;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  otherInformation?: string | null;
+  mapEmbedUrl?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TermsAndConditions {
+  id: string;
+  type: 'student' | 'membership' | 'donation' | 'general';
+  titleEnglish: string;
+  titleHindi?: string | null;
+  contentEnglish: string;
+  contentHindi?: string | null;
+  version: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export const insertAdminSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
@@ -357,6 +386,10 @@ export const insertStudentSchema = z.object({
   feeAmount: z.number().optional(),
   feePaid: z.boolean().optional(),
   isActive: z.boolean().optional(),
+  registrationDate: z.date().optional(),
+  expiryDate: z.date().optional(),
+  termsAccepted: z.boolean().optional(),
+  termsAcceptedAt: z.date().optional(),
 });
 
 export const insertResultSchema = z.object({
@@ -378,6 +411,7 @@ export const insertAdmitCardSchema = z.object({
   fileName: z.string(),
   termsEnglish: z.string().optional(),
   termsHindi: z.string().optional(),
+  studentPhotoUrl: z.string().optional(),
 });
 
 export const insertMembershipSchema = z.object({
@@ -587,6 +621,24 @@ export const insertGalleryImageSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
+export const insertContactInfoSchema = z.object({
+  address: z.string().optional(),
+  phone: z.string().optional(),
+  email: z.string().email().optional(),
+  otherInformation: z.string().optional(),
+  mapEmbedUrl: z.string().optional(),
+});
+
+export const insertTermsAndConditionsSchema = z.object({
+  type: z.enum(['student', 'membership', 'donation', 'general']),
+  titleEnglish: z.string(),
+  titleHindi: z.string().optional(),
+  contentEnglish: z.string(),
+  contentHindi: z.string().optional(),
+  version: z.number().optional(),
+  isActive: z.boolean().optional(),
+});
+
 export type InsertAdmin = z.infer<typeof insertAdminSchema>;
 export type InsertStudent = z.infer<typeof insertStudentSchema>;
 export type InsertResult = z.infer<typeof insertResultSchema>;
@@ -607,3 +659,5 @@ export type InsertPaymentTransaction = z.infer<typeof insertPaymentTransactionSc
 export type InsertTeamMember = z.infer<typeof insertTeamMemberSchema>;
 export type InsertService = z.infer<typeof insertServiceSchema>;
 export type InsertGalleryImage = z.infer<typeof insertGalleryImageSchema>;
+export type InsertContactInfo = z.infer<typeof insertContactInfoSchema>;
+export type InsertTermsAndConditions = z.infer<typeof insertTermsAndConditionsSchema>;

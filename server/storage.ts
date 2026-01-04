@@ -1,11 +1,10 @@
 import {
   Admin, Student, Result, AdmitCard as AdmitCardType, Membership, MenuItem, AdminSetting, PaymentConfig,
-  ContentSection, VolunteerApplication, FeeStructure, MembershipCard, MemberCard, Page, ContactInquiry,
-  VolunteerAccount, PaymentTransaction, TeamMember, Service, GalleryImage,
+  ContentSection, VolunteerApplication, FeeStructure, MembershipCard, MemberCard, Page, ContactInquiry, ContactInfo, TermsAndConditions,
   InsertAdmin, InsertStudent, InsertResult, InsertAdmitCard, InsertMembership,
   InsertMenuItem, InsertAdminSetting, InsertPaymentConfig, InsertContentSection,
   InsertVolunteerApplication, InsertFeeStructure, InsertMembershipCard, InsertMemberCard, InsertPage, InsertContactInquiry,
-  InsertVolunteerAccount, InsertPaymentTransaction, InsertTeamMember, InsertService, InsertGalleryImage
+  InsertVolunteerAccount, InsertPaymentTransaction, InsertTeamMember, InsertService, InsertGalleryImage, InsertTermsAndConditions
 } from "@shared/schema";
 import {
   Admin as AdminModel, Student as StudentModel, Result as ResultModel, AdmitCard as AdmitCardModel,
@@ -14,7 +13,8 @@ import {
   VolunteerApplication as VolunteerApplicationModel, FeeStructure as FeeStructureModel,
   MembershipCard as MembershipCardModel, MemberCard as MemberCardModel, Page as PageModel, ContactInquiry as ContactInquiryModel,
   VolunteerAccount as VolunteerAccountModel, PaymentTransaction as PaymentTransactionModel,
-  TeamMember as TeamMemberModel, Service as ServiceModel, GalleryImage as GalleryImageModel
+  TeamMember as TeamMemberModel, Service as ServiceModel, GalleryImage as GalleryImageModel, ContactInfo as ContactInfoModel,
+  TermsAndConditions as TermsAndConditionsModel
 } from "./models";
 
 function toPlain<T>(doc: any): T {
@@ -146,6 +146,14 @@ export interface IStorage {
   getActiveGalleryImages(): Promise<GalleryImage[]>;
   updateGalleryImage(id: string, data: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined>;
   deleteGalleryImage(id: string): Promise<void>;
+
+  getContactInfo(): Promise<ContactInfo | undefined>;
+  updateContactInfo(data: Partial<ContactInfo>): Promise<ContactInfo | undefined>;
+
+  createTermsAndConditions(data: InsertTermsAndConditions): Promise<TermsAndConditions>;
+  getTermsAndConditionsByType(type: string): Promise<TermsAndConditions | undefined>;
+  getAllTermsAndConditions(): Promise<TermsAndConditions[]>;
+  updateTermsAndConditions(id: string, data: Partial<InsertTermsAndConditions>): Promise<TermsAndConditions | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -624,6 +632,41 @@ export class DatabaseStorage implements IStorage {
 
   async deleteGalleryImage(id: string): Promise<void> {
     await GalleryImageModel.findByIdAndDelete(id);
+  }
+
+  async getContactInfo(): Promise<ContactInfo | undefined> {
+    const contactInfo = await ContactInfoModel.findOne().sort({ createdAt: -1 });
+    return contactInfo ? toPlain<ContactInfo>(contactInfo) : undefined;
+  }
+
+  async updateContactInfo(data: Partial<ContactInfo>): Promise<ContactInfo | undefined> {
+    let contactInfo = await ContactInfoModel.findOne();
+    if (!contactInfo) {
+      contactInfo = await ContactInfoModel.create(data);
+    } else {
+      contactInfo = await ContactInfoModel.findByIdAndUpdate(contactInfo._id, { ...data, updatedAt: new Date() }, { new: true });
+    }
+    return contactInfo ? toPlain<ContactInfo>(contactInfo) : undefined;
+  }
+
+  async createTermsAndConditions(data: InsertTermsAndConditions): Promise<TermsAndConditions> {
+    const termsAndConditions = await TermsAndConditionsModel.create(data);
+    return toPlain<TermsAndConditions>(termsAndConditions);
+  }
+
+  async getTermsAndConditionsByType(type: string): Promise<TermsAndConditions | undefined> {
+    const tac = await TermsAndConditionsModel.findOne({ type, isActive: true }).sort({ version: -1 });
+    return tac ? toPlain<TermsAndConditions>(tac) : undefined;
+  }
+
+  async getAllTermsAndConditions(): Promise<TermsAndConditions[]> {
+    const tac = await TermsAndConditionsModel.find().sort({ type: 1, version: -1 });
+    return toPlainArray<TermsAndConditions>(tac);
+  }
+
+  async updateTermsAndConditions(id: string, data: Partial<InsertTermsAndConditions>): Promise<TermsAndConditions | undefined> {
+    const tac = await TermsAndConditionsModel.findByIdAndUpdate(id, { ...data, updatedAt: new Date() }, { new: true });
+    return tac ? toPlain<TermsAndConditions>(tac) : undefined;
   }
 }
 

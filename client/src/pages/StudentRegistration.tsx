@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { GraduationCap, CheckCircle, Copy, Loader2, QrCode, Building } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
@@ -40,6 +42,9 @@ export default function StudentRegistration() {
   const [registrationData, setRegistrationData] = useState<{ email: string; registrationNumber: string } | null>(null);
   const [paymentConfigs, setPaymentConfigs] = useState<PaymentConfig[]>([]);
   const [paymentLoading, setPaymentLoading] = useState(true);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsContent, setTermsContent] = useState<string>("");
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { signup } = useAuth();
@@ -59,6 +64,21 @@ export default function StudentRegistration() {
       }
     };
     fetchPaymentConfigs();
+  }, []);
+
+  useEffect(() => {
+    const fetchTermsAndConditions = async () => {
+      try {
+        const res = await fetch("/api/public/terms-and-conditions/student");
+        if (res.ok) {
+          const data = await res.json();
+          setTermsContent(data.contentEnglish || "");
+        }
+      } catch (error) {
+        console.error("Error fetching terms and conditions:", error);
+      }
+    };
+    fetchTermsAndConditions();
   }, []);
 
   const [formData, setFormData] = useState({
@@ -110,6 +130,14 @@ export default function StudentRegistration() {
       });
       return;
     }
+    if (!termsAccepted) {
+      toast({
+        title: "Terms & Conditions आवश्यक है",
+        description: "कृपया Terms & Conditions को स्वीकार करें",
+        variant: "destructive",
+      });
+      return;
+    }
     setStep(2);
   };
 
@@ -139,6 +167,8 @@ export default function StudentRegistration() {
         gender: formData.gender,
         class: formData.class,
         feeLevel: formData.feeLevel,
+        termsAccepted: termsAccepted,
+        termsAcceptedAt: new Date(),
       });
 
       if (result.success) {
@@ -334,6 +364,44 @@ export default function StudentRegistration() {
                     Registration Fee / रजिस्ट्रेशन शुल्क: <span className="text-secondary">Rs.{selectedFeeLevel?.amount}</span>
                   </p>
                 </div>
+
+                <div className="flex items-start space-x-3 border-l-4 border-yellow-500 bg-yellow-50 p-4 rounded">
+                  <Checkbox
+                    id="terms"
+                    checked={termsAccepted}
+                    onCheckedChange={(checked) => setTermsAccepted(checked === true)}
+                    data-testid="checkbox-terms"
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="terms" className="text-sm font-medium cursor-pointer">
+                      मैंने Terms & Conditions को पढ़ा और स्वीकार किया हूं / I have read and agree to Terms & Conditions *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowTermsModal(true)}
+                      className="text-xs text-secondary hover:underline mt-1"
+                    >
+                      View Terms & Conditions
+                    </button>
+                  </div>
+                </div>
+
+                <Dialog open={showTermsModal} onOpenChange={setShowTermsModal}>
+                  <DialogContent className="max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Terms & Conditions / शर्तें और शैतियां</DialogTitle>
+                    </DialogHeader>
+                    <div className="prose prose-sm max-w-none text-sm space-y-4">
+                      {termsContent ? (
+                        <div dangerouslySetInnerHTML={{ __html: termsContent }} />
+                      ) : (
+                        <div className="text-center text-muted-foreground py-8">
+                          <p>Loading Terms & Conditions...</p>
+                        </div>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
 
                 <Button onClick={handleProceedToPayment} className="w-full bg-secondary" data-testid="button-proceed-payment">
                   Proceed to Payment / भुगतान करें

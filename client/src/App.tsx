@@ -46,6 +46,7 @@ import AdminContent from "./pages/admin/AdminContent";
 import AdminPages from "./pages/admin/AdminPages";
 import AdminPayments from "./pages/admin/AdminPayments";
 import AdminContactInquiries from "./pages/admin/AdminContactInquiries";
+import AdminContactInformation from "./pages/admin/AdminContactInformation";
 import AdminTransactions from "./pages/admin/AdminTransactions";
 
 
@@ -104,6 +105,7 @@ const App = () => (
             <Route path="/admin/payments" element={<AdminPayments />} />
             <Route path="/admin/transactions" element={<AdminTransactions />} />
             <Route path="/admin/contact-inquiries" element={<AdminContactInquiries />} />
+            <Route path="/admin/contact-information" element={<AdminContactInformation />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

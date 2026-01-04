@@ -29,6 +29,10 @@ export interface IStudent extends Document {
   feePaid: boolean;
   paymentDate?: Date;
   isActive: boolean;
+  registrationDate: Date;
+  expiryDate: Date;
+  termsAccepted: boolean;
+  termsAcceptedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,6 +57,7 @@ export interface IAdmitCard extends Document {
   fileName: string;
   termsEnglish?: string;
   termsHindi?: string;
+  studentPhotoUrl?: string;
   uploadedAt: Date;
 }
 
@@ -305,6 +310,15 @@ export interface IMember extends Document {
   isActive: boolean;
   isVerified: boolean;
   iCardId?: mongoose.Types.ObjectId;
+  status: 'pending' | 'approved' | 'rejected' | 'expired';
+  membershipStartDate: Date;
+  membershipExpiryDate: Date;
+  termsAccepted: boolean;
+  termsAcceptedAt?: Date;
+  approvalStatus: 'pending' | 'approved' | 'rejected';
+  approvedBy?: mongoose.Types.ObjectId;
+  approvedAt?: Date;
+  adminNotes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -323,6 +337,28 @@ export interface IMemberCard extends Document {
   isGenerated: boolean;
   validFrom: string;
   validUntil: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IContactInfo extends Document {
+  address?: string;
+  phone?: string;
+  email?: string;
+  otherInformation?: string;
+  mapEmbedUrl?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ITermsAndConditions extends Document {
+  type: 'student' | 'membership' | 'donation' | 'general';
+  titleEnglish: string;
+  titleHindi?: string;
+  contentEnglish: string;
+  contentHindi?: string;
+  version: number;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -356,6 +392,10 @@ const StudentSchema = new Schema<IStudent>({
   feePaid: { type: Boolean, default: false },
   paymentDate: Date,
   isActive: { type: Boolean, default: true },
+  registrationDate: { type: Date, default: Date.now },
+  expiryDate: { type: Date, default: () => { const d = new Date(); d.setMonth(d.getMonth() + 1); return d; } },
+  termsAccepted: { type: Boolean, default: false },
+  termsAcceptedAt: Date,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
@@ -380,6 +420,7 @@ const AdmitCardSchema = new Schema<IAdmitCard>({
   fileName: { type: String, required: true },
   termsEnglish: String,
   termsHindi: String,
+  studentPhotoUrl: String,
   uploadedAt: { type: Date, default: Date.now }
 });
 
@@ -620,6 +661,28 @@ const PasswordResetTokenSchema = new Schema<IPasswordResetToken>({
   createdAt: { type: Date, default: Date.now }
 });
 
+const ContactInfoSchema = new Schema<IContactInfo>({
+  address: String,
+  phone: String,
+  email: String,
+  otherInformation: String,
+  mapEmbedUrl: String,
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const TermsAndConditionsSchema = new Schema<ITermsAndConditions>({
+  type: { type: String, enum: ['student', 'membership', 'donation', 'general'], required: true },
+  titleEnglish: { type: String, required: true },
+  titleHindi: String,
+  contentEnglish: { type: String, required: true },
+  contentHindi: String,
+  version: { type: Number, default: 1 },
+  isActive: { type: Boolean, default: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
 const MemberSchema = new Schema<IMember>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -632,6 +695,15 @@ const MemberSchema = new Schema<IMember>({
   isActive: { type: Boolean, default: true },
   isVerified: { type: Boolean, default: false },
   iCardId: { type: Schema.Types.ObjectId, ref: 'MemberCard' },
+  status: { type: String, enum: ['pending', 'approved', 'rejected', 'expired'], default: 'pending' },
+  membershipStartDate: { type: Date, default: Date.now },
+  membershipExpiryDate: { type: Date, default: () => { const d = new Date(); d.setMonth(d.getMonth() + 1); return d; } },
+  termsAccepted: { type: Boolean, default: false },
+  termsAcceptedAt: Date,
+  approvalStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+  approvedBy: { type: Schema.Types.ObjectId, ref: 'Admin' },
+  approvedAt: Date,
+  adminNotes: String,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
@@ -680,3 +752,5 @@ export const GalleryImage = mongoose.model<IGalleryImage>('GalleryImage', Galler
 export const PasswordResetToken = mongoose.model<IPasswordResetToken>('PasswordResetToken', PasswordResetTokenSchema);
 export const Member = mongoose.model<IMember>('Member', MemberSchema);
 export const MemberCard = mongoose.model<IMemberCard>('MemberCard', MemberCardSchema);
+export const ContactInfo = mongoose.model<IContactInfo>('ContactInfo', ContactInfoSchema);
+export const TermsAndConditions = mongoose.model<ITermsAndConditions>('TermsAndConditions', TermsAndConditionsSchema);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, Heart, Phone, UserPlus, IdCard, Download, Loader2 } from "lucide-react";
+import { Menu, X, ChevronDown, Heart, Phone, UserPlus, IdCard, Download, Loader2, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -284,6 +284,12 @@ export default function Navbar() {
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex items-center gap-3">
+            <Link to="/student/login">
+              <Button variant="outline" className="border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950">
+                <GraduationCap className="h-4 w-4 mr-2" />
+                Student Login
+              </Button>
+            </Link>
             {admitCardEnabled && (
               <Dialog open={isAdmitDialogOpen} onOpenChange={setIsAdmitDialogOpen}>
                 <DialogTrigger asChild>
@@ -373,6 +379,12 @@ export default function Navbar() {
                   )}
                 </div>
               ))}
+              <Link to="/student/login" onClick={() => setIsOpen(false)}>
+                <Button variant="outline" className="w-full mt-2 border-blue-500 text-blue-600">
+                  <GraduationCap className="h-4 w-4 mr-2" />
+                  Student Login
+                </Button>
+              </Link>
               {admitCardEnabled && (
                 <Dialog open={isAdmitDialogOpen} onOpenChange={setIsAdmitDialogOpen}>
                   <DialogTrigger asChild>

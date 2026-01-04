@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { storage } from "./storage";
 import { authMiddleware, adminOnly, generateToken, AuthRequest } from "./middleware/auth";
-import { insertGalleryImageSchema } from "@shared/schema";
+import { insertGalleryImageSchema, insertTermsAndConditionsSchema } from "@shared/schema";
 import {
   sendStudentRegistrationEmail,
   sendVolunteerRegistrationEmail,
@@ -868,6 +868,72 @@ export async function registerRoutes(app: Express): Promise<void> {
       res.json(inquiry);
     } catch (error) {
       res.status(500).json({ error: "Failed to update inquiry" });
+    }
+  });
+
+  app.get("/api/public/contact-info", async (req, res) => {
+    try {
+      const contactInfo = await storage.getContactInfo();
+      res.json(contactInfo || {});
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch contact info" });
+    }
+  });
+
+  app.get("/api/admin/contact-info", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const contactInfo = await storage.getContactInfo();
+      res.json(contactInfo || {});
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch contact info" });
+    }
+  });
+
+  app.patch("/api/admin/contact-info", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const contactInfo = await storage.updateContactInfo(req.body);
+      res.json(contactInfo || {});
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update contact info" });
+    }
+  });
+
+  // Terms & Conditions API
+  app.get("/api/public/terms-and-conditions/:type", async (req, res) => {
+    try {
+      const tac = await storage.getTermsAndConditionsByType(req.params.type);
+      if (!tac) return res.status(404).json({ error: "Terms and conditions not found" });
+      res.json(tac);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch terms and conditions" });
+    }
+  });
+
+  app.get("/api/admin/terms-and-conditions", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const tac = await storage.getAllTermsAndConditions();
+      res.json(tac);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch terms and conditions" });
+    }
+  });
+
+  app.post("/api/admin/terms-and-conditions", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const validated = insertTermsAndConditionsSchema.parse(req.body);
+      const tac = await storage.createTermsAndConditions(validated);
+      res.status(201).json(tac);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid terms and conditions data" });
+    }
+  });
+
+  app.patch("/api/admin/terms-and-conditions/:id", authMiddleware, adminOnly, async (req: AuthRequest, res) => {
+    try {
+      const tac = await storage.updateTermsAndConditions(req.params.id, req.body);
+      res.json(tac || {});
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update terms and conditions" });
     }
   });
 

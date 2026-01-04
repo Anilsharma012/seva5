@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { IdCard, Plus, Search, Download, Loader2, Users } from "lucide-react";
+import { IdCard, Plus, Search, Download, Loader2, Users, Upload, X } from "lucide-react";
 
 interface Student {
   id: number;
@@ -33,6 +33,7 @@ interface AdmitCard {
   examName: string;
   fileUrl: string;
   fileName: string;
+  studentPhotoUrl?: string;
   uploadedAt: string;
 }
 
@@ -45,6 +46,7 @@ export default function AdminAdmitCards() {
   const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const admitCardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -54,6 +56,7 @@ export default function AdminAdmitCards() {
     examDate: "",
     examTime: "10:00 AM - 12:00 PM",
     examCenter: "",
+    studentPhotoUrl: "",
   });
 
   const [bulkFormData, setBulkFormData] = useState({
@@ -111,15 +114,16 @@ export default function AdminAdmitCards() {
 
       const res = await fetch("/api/admit-cards", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` 
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           studentId: formData.studentId,
           examName: formData.examName,
           fileUrl: fileData,
           fileName: `admit_card_${student.rollNumber || student.registrationNumber}.json`,
+          studentPhotoUrl: formData.studentPhotoUrl || undefined,
         }),
       });
 
@@ -127,7 +131,7 @@ export default function AdminAdmitCards() {
 
       toast({ title: "Admit Card Generated", description: `${student.fullName}` });
       setIsAddDialogOpen(false);
-      setFormData({ studentId: "", examName: "Haryana GK Exam 2025", examDate: "", examTime: "10:00 AM - 12:00 PM", examCenter: "" });
+      setFormData({ studentId: "", examName: "Haryana GK Exam 2025", examDate: "", examTime: "10:00 AM - 12:00 PM", examCenter: "", studentPhotoUrl: "" });
       loadData();
     } catch (error) {
       console.error("Error generating admit card:", error);
@@ -245,7 +249,7 @@ export default function AdminAdmitCards() {
       <div class="row"><span class="label">Father's Name:</span><span class="value">${student.fatherName || 'N/A'}</span></div>
       <div class="row"><span class="label">Class:</span><span class="value">${student.class}</span></div>
     </div>
-    <div class="details-right">Photo</div>
+    <div class="details-right">${ac.studentPhotoUrl ? `<img src="${ac.studentPhotoUrl}" style="width: 100%; height: 100%; object-fit: cover;" alt="Student Photo" />` : 'Photo'}</div>
   </div>
   
   <div class="exam-info">
@@ -500,12 +504,112 @@ export default function AdminAdmitCards() {
                   </div>
                   <div className="space-y-2">
                     <Label>Exam Center</Label>
-                    <Input 
-                      value={formData.examCenter} 
+                    <Input
+                      value={formData.examCenter}
                       onChange={(e) => setFormData({ ...formData, examCenter: e.target.value })}
                       placeholder="परीक्षा केंद्र"
                       data-testid="input-exam-center"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Student Photo (Passport Size)</Label>
+                    <div className="flex items-center gap-2">
+                      {formData.studentPhotoUrl ? (
+                        <div className="relative w-20 h-24 border rounded">
+                          <img src={formData.studentPhotoUrl} alt="Student" className="w-full h-full object-cover rounded" />
+                          <button
+                            onClick={() => setFormData({ ...formData, studentPhotoUrl: "" })}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="w-20 h-24 border-2 border-dashed rounded flex items-center justify-center bg-muted">
+                          <span className="text-xs text-muted-foreground">No photo</span>
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+
+                            setUploading(true);
+                            try {
+                              const token = localStorage.getItem("auth_token");
+                              const urlResponse = await fetch("/api/uploads/request-url", {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                  Authorization: `Bearer ${token}`
+                                },
+                                body: JSON.stringify({
+                                  name: file.name,
+                                  size: file.size,
+                                  contentType: file.type,
+                                }),
+                              });
+
+                              if (!urlResponse.ok) {
+                                const error = await urlResponse.json();
+                                throw new Error(error.error || "Failed to request upload URL");
+                              }
+
+                              const { uploadURL, fileURL } = await urlResponse.json();
+
+                              const uploadResponse = await fetch(uploadURL, {
+                                method: "PUT",
+                                headers: {
+                                  "Content-Type": file.type || "application/octet-stream",
+                                  Authorization: `Bearer ${token}`
+                                },
+                                body: file,
+                              });
+
+                              if (!uploadResponse.ok) {
+                                throw new Error("Failed to upload file");
+                              }
+
+                              setFormData({ ...formData, studentPhotoUrl: fileURL });
+                              toast({ title: "Success", description: "Photo uploaded successfully" });
+                            } catch (error) {
+                              console.error("Upload error:", error);
+                              toast({
+                                title: "Error",
+                                description: error instanceof Error ? error.message : "Failed to upload photo",
+                                variant: "destructive"
+                              });
+                            } finally {
+                              setUploading(false);
+                            }
+                          }}
+                          disabled={uploading}
+                          className="hidden"
+                          id="photo-input"
+                        />
+                        <Button
+                          onClick={() => document.getElementById("photo-input")?.click()}
+                          disabled={uploading}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          {uploading ? (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              Uploading...
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="h-4 w-4 mr-2" />
+                              Upload Photo
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                   <Button onClick={handleSubmit} className="w-full" data-testid="button-generate-admit-card">Generate Admit Card</Button>
                 </div>

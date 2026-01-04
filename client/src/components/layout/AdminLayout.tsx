@@ -80,6 +80,7 @@ const fallbackMenuItems = [
   { icon: FileEdit, label: "Content", href: "/admin/content" },
   { icon: Layout, label: "Pages", href: "/admin/pages" },
   { icon: Wallet, label: "Payments", href: "/admin/payments" },
+  { icon: Phone, label: "Contact Info", href: "/admin/contact-information" },
   { icon: Settings, label: "Settings", href: "/admin/settings" },
 ];
 
