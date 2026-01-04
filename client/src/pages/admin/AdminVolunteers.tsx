@@ -210,6 +210,9 @@ export default function AdminVolunteers() {
                             <Button size="icon" variant="outline" className={account.isActive ? "text-red-600" : "text-green-600"} onClick={() => updateAccountMutation.mutate({ id: account.id, isActive: !account.isActive })} disabled={updateAccountMutation.isPending} data-testid={`button-toggle-active-${account.id}`}>
                               {account.isActive ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
                             </Button>
+                            <Button size="icon" variant="destructive" onClick={() => { if (confirm("Are you sure? / क्या आप सुनिश्चित हैं?")) deleteAccountMutation.mutate(account.id); }} disabled={deleteAccountMutation.isPending} data-testid={`button-delete-account-${account.id}`}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </div>
                       </div>
