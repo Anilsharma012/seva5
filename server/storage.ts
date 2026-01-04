@@ -1,11 +1,10 @@
 import {
   Admin, Student, Result, AdmitCard as AdmitCardType, Membership, MenuItem, AdminSetting, PaymentConfig,
-  ContentSection, VolunteerApplication, FeeStructure, MembershipCard, MemberCard, Page, ContactInquiry, ContactInfo,
-  VolunteerAccount, PaymentTransaction, TeamMember, Service, GalleryImage,
+  ContentSection, VolunteerApplication, FeeStructure, MembershipCard, MemberCard, Page, ContactInquiry, ContactInfo, TermsAndConditions,
   InsertAdmin, InsertStudent, InsertResult, InsertAdmitCard, InsertMembership,
   InsertMenuItem, InsertAdminSetting, InsertPaymentConfig, InsertContentSection,
   InsertVolunteerApplication, InsertFeeStructure, InsertMembershipCard, InsertMemberCard, InsertPage, InsertContactInquiry,
-  InsertVolunteerAccount, InsertPaymentTransaction, InsertTeamMember, InsertService, InsertGalleryImage
+  InsertVolunteerAccount, InsertPaymentTransaction, InsertTeamMember, InsertService, InsertGalleryImage, InsertTermsAndConditions
 } from "@shared/schema";
 import {
   Admin as AdminModel, Student as StudentModel, Result as ResultModel, AdmitCard as AdmitCardModel,
@@ -14,7 +13,8 @@ import {
   VolunteerApplication as VolunteerApplicationModel, FeeStructure as FeeStructureModel,
   MembershipCard as MembershipCardModel, MemberCard as MemberCardModel, Page as PageModel, ContactInquiry as ContactInquiryModel,
   VolunteerAccount as VolunteerAccountModel, PaymentTransaction as PaymentTransactionModel,
-  TeamMember as TeamMemberModel, Service as ServiceModel, GalleryImage as GalleryImageModel, ContactInfo as ContactInfoModel
+  TeamMember as TeamMemberModel, Service as ServiceModel, GalleryImage as GalleryImageModel, ContactInfo as ContactInfoModel,
+  TermsAndConditions as TermsAndConditionsModel
 } from "./models";
 
 function toPlain<T>(doc: any): T {
