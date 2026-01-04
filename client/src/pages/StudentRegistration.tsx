@@ -167,6 +167,8 @@ export default function StudentRegistration() {
         gender: formData.gender,
         class: formData.class,
         feeLevel: formData.feeLevel,
+        termsAccepted: termsAccepted,
+        termsAcceptedAt: new Date(),
       });
 
       if (result.success) {
