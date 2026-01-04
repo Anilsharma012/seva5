@@ -675,6 +675,14 @@ const ContactInfoSchema = new Schema<IContactInfo>({
   email: String,
   otherInformation: String,
   mapEmbedUrl: String,
+  socialMedia: {
+    facebook: String,
+    twitter: String,
+    instagram: String,
+    linkedin: String,
+    youtube: String,
+    whatsapp: String,
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
