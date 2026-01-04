@@ -683,6 +683,15 @@ const MemberSchema = new Schema<IMember>({
   isActive: { type: Boolean, default: true },
   isVerified: { type: Boolean, default: false },
   iCardId: { type: Schema.Types.ObjectId, ref: 'MemberCard' },
+  status: { type: String, enum: ['pending', 'approved', 'rejected', 'expired'], default: 'pending' },
+  membershipStartDate: { type: Date, default: Date.now },
+  membershipExpiryDate: { type: Date, default: () => { const d = new Date(); d.setMonth(d.getMonth() + 1); return d; } },
+  termsAccepted: { type: Boolean, default: false },
+  termsAcceptedAt: Date,
+  approvalStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+  approvedBy: { type: Schema.Types.ObjectId, ref: 'Admin' },
+  approvedAt: Date,
+  adminNotes: String,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
