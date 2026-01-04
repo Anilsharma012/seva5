@@ -753,3 +753,4 @@ export const PasswordResetToken = mongoose.model<IPasswordResetToken>('PasswordR
 export const Member = mongoose.model<IMember>('Member', MemberSchema);
 export const MemberCard = mongoose.model<IMemberCard>('MemberCard', MemberCardSchema);
 export const ContactInfo = mongoose.model<IContactInfo>('ContactInfo', ContactInfoSchema);
+export const TermsAndConditions = mongoose.model<ITermsAndConditions>('TermsAndConditions', TermsAndConditionsSchema);
