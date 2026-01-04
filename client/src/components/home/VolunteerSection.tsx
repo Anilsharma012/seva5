@@ -22,10 +22,14 @@ export default function VolunteerSection() {
   useEffect(() => {
     const fetchVolunteerContent = async () => {
       try {
-        const res = await fetch("/api/public/content-section/volunteer");
+        const res = await fetch("/api/public/content/volunteer");
         if (res.ok) {
           const data = await res.json();
-          setVolunteerContent(data);
+          // Get the first active section
+          const activeSection = Array.isArray(data) ? data.find((s: VolunteerContent) => s.isActive) : data;
+          if (activeSection) {
+            setVolunteerContent(activeSection);
+          }
         }
       } catch (error) {
         console.error("Error fetching volunteer content:", error);
