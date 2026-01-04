@@ -671,6 +671,18 @@ const ContactInfoSchema = new Schema<IContactInfo>({
   updatedAt: { type: Date, default: Date.now }
 });
 
+const TermsAndConditionsSchema = new Schema<ITermsAndConditions>({
+  type: { type: String, enum: ['student', 'membership', 'donation', 'general'], required: true },
+  titleEnglish: { type: String, required: true },
+  titleHindi: String,
+  contentEnglish: { type: String, required: true },
+  contentHindi: String,
+  version: { type: Number, default: 1 },
+  isActive: { type: Boolean, default: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
 const MemberSchema = new Schema<IMember>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
