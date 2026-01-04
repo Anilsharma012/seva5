@@ -128,6 +128,14 @@ export default function StudentRegistration() {
       });
       return;
     }
+    if (!termsAccepted) {
+      toast({
+        title: "Terms & Conditions आवश्यक है",
+        description: "कृपया Terms & Conditions को स्वीकार करें",
+        variant: "destructive",
+      });
+      return;
+    }
     setStep(2);
   };
 
