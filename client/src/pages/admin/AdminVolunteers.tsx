@@ -355,6 +355,9 @@ export default function AdminVolunteers() {
                       <><Check className="h-4 w-4 mr-2" /> Activate / सक्रिय</>
                     )}
                   </Button>
+                  <Button variant="destructive" onClick={() => { if (confirm("Are you sure you want to delete this volunteer account? / क्या आप इस स्वयंसेवक खाते को हटाना सुनिश्चित हैं?")) deleteAccountMutation.mutate(selectedAccount.id); }} disabled={deleteAccountMutation.isPending} data-testid="button-dialog-delete-account">
+                    <Trash2 className="h-4 w-4 mr-2" /> Delete / हटाएं
+                  </Button>
                 </div>
               </div>
             )}
