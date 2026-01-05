@@ -373,8 +373,9 @@ export default function StudentDashboard() {
                 {admitCards.length > 0 ? (
                   admitCards.map((card) => {
                     const admitData = JSON.parse(card.fileUrl);
+                    const cardId = card._id || card.id;
                     return (
-                      <div key={card._id} data-testid={`card-admit-${card._id}`}>
+                      <div key={cardId} data-testid={`card-admit-${cardId}`}>
                         {/* Admit Card Preview */}
                         <div className="bg-white border-2 border-gray-200 rounded-lg shadow-lg overflow-hidden">
                           {/* Header */}
