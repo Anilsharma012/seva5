@@ -498,7 +498,7 @@ export default function StudentDashboard() {
 
                         {/* Download Button */}
                         <div className="mt-6 flex justify-center">
-                          <Button onClick={() => downloadAdmitCard(card)} size="lg" data-testid={`button-download-admit-${card._id}`}>
+                          <Button onClick={() => downloadAdmitCard(card)} size="lg" data-testid={`button-download-admit-${cardId}`}>
                             <Download className="h-4 w-4 mr-2" />
                             Download Admit Card
                           </Button>
