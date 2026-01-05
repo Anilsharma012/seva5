@@ -369,38 +369,153 @@ export default function StudentDashboard() {
             )}
 
             {activeTab === "admit-card" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <IdCard className="text-purple-600" />
-                    Admit Card / प्रवेश पत्र
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {admitCards.length > 0 ? (
-                    <div className="space-y-3">
-                      {admitCards.map((card) => (
-                        <div key={card._id || card.id} className="flex items-center justify-between gap-4 p-4 bg-muted rounded-lg" data-testid={`card-admit-${card._id || card.id}`}>
-                          <div>
-                            <p className="font-medium">{card.examName}</p>
-                            <p className="text-sm text-muted-foreground">Click to download your admit card</p>
+              <div className="space-y-6">
+                {admitCards.length > 0 ? (
+                  admitCards.map((card) => {
+                    const admitData = JSON.parse(card.fileUrl);
+                    const cardId = card._id || card.id;
+                    return (
+                      <div key={cardId} data-testid={`card-admit-${cardId}`}>
+                        {/* Admit Card Preview */}
+                        <div className="bg-white border-2 border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                          {/* Header */}
+                          <div className="border-b-4 border-red-600 p-6 text-center bg-gray-50">
+                            <h2 className="text-red-600 font-bold text-2xl mb-2">Manav Welfare Seva Society</h2>
+                            <p className="text-gray-600 text-sm mb-1">मानव वेलफेयर सेवा सोसाइटी</p>
+                            <p className="text-gray-600 text-xs mb-2">Reg. No: 01215 | Phone: +91 98126 76818</p>
+                            <p className="text-gray-600 text-xs">Bhuna, Haryana</p>
                           </div>
-                          <Button onClick={() => downloadAdmitCard(card)} data-testid={`button-download-admit-${card._id || card.id}`}>
+
+                          {/* Title */}
+                          <div className="bg-red-600 text-white text-center py-3 font-bold text-lg">
+                            ADMIT CARD / प्रवेश पत्र
+                          </div>
+
+                          {/* Content */}
+                          <div className="p-8">
+                            {/* Student Info and Photo */}
+                            <div className="flex gap-8 mb-8">
+                              <div className="flex-1">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <p className="text-gray-600 text-sm font-semibold">Roll Number / रोल नंबर</p>
+                                    <p className="text-gray-900 font-medium">{student?.rollNumber || 'N/A'}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-600 text-sm font-semibold">Registration No / पंजीकरण</p>
+                                    <p className="text-gray-900 font-medium">{student?.registrationNumber}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-600 text-sm font-semibold">Student Name / नाम</p>
+                                    <p className="text-gray-900 font-medium">{student?.fullName}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-600 text-sm font-semibold">Father's Name / पिता</p>
+                                    <p className="text-gray-900 font-medium">{student?.fatherName || 'N/A'}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-gray-600 text-sm font-semibold">Class / कक्षा</p>
+                                    <p className="text-gray-900 font-medium">{student?.class}</p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Photo Area */}
+                              <div className="flex-shrink-0">
+                                <div className="w-32 h-40 border-2 border-gray-300 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
+                                  {card.studentPhotoUrl ? (
+                                    <img
+                                      src={card.studentPhotoUrl}
+                                      alt="Student Photo"
+                                      className="w-full h-full object-cover"
+                                      data-testid="img-student-photo"
+                                    />
+                                  ) : (
+                                    <div className="text-center text-gray-400">
+                                      <GraduationCap className="h-8 w-8 mx-auto mb-2" />
+                                      <p className="text-xs">No Photo</p>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Exam Details */}
+                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
+                              <h3 className="font-bold text-gray-900 mb-4 text-lg">Exam Details / परीक्षा विवरण</h3>
+                              <div className="grid grid-cols-2 gap-6">
+                                <div>
+                                  <p className="text-gray-600 text-sm font-semibold">Exam Name / परीक्षा</p>
+                                  <p className="text-gray-900">{admitData?.examName || card.examName}</p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-600 text-sm font-semibold">Date / तारीख</p>
+                                  <p className="text-gray-900">{admitData?.examDate || 'To be announced / घोषित किया जाएगा'}</p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-600 text-sm font-semibold">Time / समय</p>
+                                  <p className="text-gray-900">{admitData?.examTime || 'To be announced / घोषित किया जाएगा'}</p>
+                                </div>
+                                <div>
+                                  <p className="text-gray-600 text-sm font-semibold">Center / केंद्र</p>
+                                  <p className="text-gray-900">{admitData?.examCenter || 'To be announced / घोषित किया जाएगा'}</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Terms & Conditions */}
+                            <div className="border-2 border-red-600 rounded-lg p-6">
+                              <h3 className="font-bold text-red-600 mb-4">Terms & Conditions / नियम एवं शर्तें</h3>
+                              <div className="grid md:grid-cols-2 gap-6 text-sm text-gray-700">
+                                <div>
+                                  <ol className="space-y-2 list-decimal list-inside">
+                                    <li>Bring this admit card to the examination center.</li>
+                                    <li>Bring a valid photo ID (Aadhar/School ID).</li>
+                                    <li>Arrive 30 minutes before exam time.</li>
+                                    <li>Electronic devices are strictly prohibited.</li>
+                                    <li>No candidate will be allowed after exam starts.</li>
+                                  </ol>
+                                </div>
+                                <div>
+                                  <ol className="space-y-2 list-decimal list-inside">
+                                    <li>इस प्रवेश पत्र को परीक्षा केंद्र पर लाएं।</li>
+                                    <li>वैध फोटो आईडी (आधार/स्कूल आईडी) लाएं।</li>
+                                    <li>परीक्षा समय से 30 मिनट पहले पहुंचें।</li>
+                                    <li>इलेक्ट्रॉनिक उपकरण सख्त वर्जित हैं।</li>
+                                    <li>परीक्षा शुरू होने के बाद प्रवेश नहीं मिलेगा।</li>
+                                  </ol>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Signature */}
+                            <div className="mt-8 text-right">
+                              <p className="border-t border-gray-400 pt-4 inline-block px-4">___________________</p>
+                              <p className="text-gray-600 text-sm mt-1">Authorized Signature / अधिकृत हस्ताक्षर</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Download Button */}
+                        <div className="mt-6 flex justify-center">
+                          <Button onClick={() => downloadAdmitCard(card)} size="lg" data-testid={`button-download-admit-${cardId}`}>
                             <Download className="h-4 w-4 mr-2" />
-                            Download
+                            Download Admit Card
                           </Button>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground">
+                      </div>
+                    );
+                  })
+                ) : (
+                  <Card>
+                    <CardContent className="text-center py-8 text-muted-foreground">
                       <IdCard className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>Admit card not generated yet</p>
                       <p className="text-sm">प्रवेश पत्र अभी उपलब्ध नहीं है</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
             )}
 
             {activeTab === "roll-number" && (
