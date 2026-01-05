@@ -31,10 +31,12 @@ interface ResultData {
 }
 
 interface AdmitCardData {
-  id: number;
+  _id?: string;
+  id?: number;
   examName: string;
   fileUrl: string;
   fileName: string;
+  studentPhotoUrl?: string;
 }
 
 interface MembershipCardData {
