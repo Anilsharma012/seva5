@@ -65,6 +65,7 @@ const iconMap: Record<string, LucideIcon> = {
   FileEdit,
   Layout,
   Wallet,
+  MessageSquare,
 };
 
 const fallbackMenuItems = [
