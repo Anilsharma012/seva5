@@ -154,45 +154,120 @@ export default function AdminContactInquiries() {
         )}
 
         <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-          <DialogContent className="max-w-lg" data-testid="dialog-inquiry-details">
-            <DialogHeader>
-              <DialogTitle>Contact Inquiry</DialogTitle>
+          <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col" data-testid="dialog-inquiry-details">
+            <DialogHeader className="border-b pb-4">
+              <DialogTitle className="text-xl">Contact Inquiry Details</DialogTitle>
             </DialogHeader>
             {selectedInquiry && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><strong>Name:</strong> <span data-testid="text-detail-name">{selectedInquiry.name}</span></div>
-                  <div><strong>Email:</strong> <span data-testid="text-detail-email">{selectedInquiry.email}</span></div>
-                  <div><strong>Phone:</strong> <span data-testid="text-detail-phone">{selectedInquiry.phone || "N/A"}</span></div>
-                  <div><strong>Subject:</strong> <span data-testid="text-detail-subject">{selectedInquiry.subject}</span></div>
+              <div className="flex-1 overflow-y-auto space-y-6 p-4">
+                {/* Inquiry Header */}
+                <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg p-4 border border-primary/10">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-foreground" data-testid="text-detail-name">{selectedInquiry.name}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">Submitted: {new Date(selectedInquiry.createdAt).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      {getStatusBadge(selectedInquiry.status)}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <strong>Message:</strong>
-                  <p className="mt-1 p-3 bg-muted rounded-md text-sm" data-testid="text-detail-message">{selectedInquiry.message}</p>
+
+                {/* Contact Information */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-foreground">Contact Information</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Email</p>
+                      <a href={`mailto:${selectedInquiry.email}`} className="text-sm text-primary hover:underline break-all" data-testid="text-detail-email">{selectedInquiry.email}</a>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Phone</p>
+                      <p className="text-sm font-medium" data-testid="text-detail-phone">
+                        {selectedInquiry.phone ? (
+                          <a href={`tel:${selectedInquiry.phone}`} className="text-primary hover:underline">{selectedInquiry.phone}</a>
+                        ) : (
+                          <span className="text-muted-foreground">Not provided</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Subject */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Admin Notes</label>
-                  <Textarea value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} placeholder="Add notes..." data-testid="input-admin-notes" />
+                  <h4 className="font-semibold text-foreground">Subject</h4>
+                  <div className="bg-muted/50 rounded-lg p-3 border-l-4 border-primary">
+                    <p className="text-sm font-medium" data-testid="text-detail-subject">{selectedInquiry.subject}</p>
+                  </div>
                 </div>
+
+                {/* Message */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Update Status</label>
+                  <h4 className="font-semibold text-foreground">Message</h4>
+                  <div className="bg-muted/50 rounded-lg p-4 border border-border max-h-48 overflow-y-auto">
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed" data-testid="text-detail-message">{selectedInquiry.message}</p>
+                  </div>
+                </div>
+
+                {/* Admin Notes */}
+                <div className="space-y-2 border-t pt-4">
+                  <label className="text-sm font-semibold text-foreground">Admin Notes</label>
+                  <Textarea
+                    value={adminNotes}
+                    onChange={(e) => setAdminNotes(e.target.value)}
+                    placeholder="Add your notes about this inquiry..."
+                    className="bg-card border-border min-h-24"
+                    data-testid="input-admin-notes"
+                  />
+                </div>
+
+                {/* Status Update */}
+                <div className="space-y-2 border-t pt-4">
+                  <label className="text-sm font-semibold text-foreground">Update Status</label>
                   <Select defaultValue={selectedInquiry.status} onValueChange={(value) => updateStatus(selectedInquiry.id, value, adminNotes)}>
-                    <SelectTrigger data-testid="select-status">
+                    <SelectTrigger className="bg-card border-border" data-testid="select-status">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="read">Read</SelectItem>
-                      <SelectItem value="replied">Replied</SelectItem>
+                      <SelectItem value="pending">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                          Pending
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="read">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                          Read
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="replied">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                          Replied
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <Button asChild className="w-full" data-testid="button-reply">
-                  <a href={`mailto:${selectedInquiry.email}?subject=Re: ${selectedInquiry.subject}`}>
-                    <Mail className="h-4 w-4 mr-2" />
-                    Reply via Email
-                  </a>
-                </Button>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2 border-t pt-4">
+                  <Button asChild className="flex-1" data-testid="button-reply">
+                    <a href={`mailto:${selectedInquiry.email}?subject=Re: ${selectedInquiry.subject}`}>
+                      <Mail className="h-4 w-4 mr-2" />
+                      Reply via Email
+                    </a>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setViewDialogOpen(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
               </div>
             )}
           </DialogContent>
