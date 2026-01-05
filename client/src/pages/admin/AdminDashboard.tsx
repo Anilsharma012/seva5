@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Users, 
-  GraduationCap, 
-  CreditCard, 
+import {
+  Users,
+  GraduationCap,
+  CreditCard,
   TrendingUp,
   UserPlus,
-  IndianRupee
+  IndianRupee,
+  MessageSquare
 } from "lucide-react";
 
 interface DashboardStats {
@@ -141,6 +142,10 @@ export default function AdminDashboard() {
               <a href="/admin/memberships" className="p-4 rounded-lg bg-muted text-center" data-testid="link-memberships">
                 <Users className="h-8 w-8 mx-auto mb-2 text-purple-600" />
                 <span className="text-sm font-medium">Memberships</span>
+              </a>
+              <a href="/admin/contact-inquiries" className="p-4 rounded-lg bg-muted text-center" data-testid="link-contact-inquiries">
+                <MessageSquare className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+                <span className="text-sm font-medium">Contact Inquiries</span>
               </a>
             </div>
           </CardContent>

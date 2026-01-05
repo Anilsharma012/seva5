@@ -15,6 +15,7 @@ const defaultMenuItems = [
   { title: "Content", titleHindi: "सामग्री", path: "/admin/content", iconKey: "FileEdit", order: 10, group: "main" },
   { title: "Pages", titleHindi: "पृष्ठ", path: "/admin/pages", iconKey: "Layout", order: 11, group: "main" },
   { title: "Transactions", titleHindi: "लेनदेन", path: "/admin/transactions", iconKey: "Receipt", order: 12, group: "main" },
+  { title: "Contact Inquiries", titleHindi: "संपर्क पूछताछ", path: "/admin/contact-inquiries", iconKey: "MessageSquare", order: 12.5, group: "main" },
   { title: "Payments", titleHindi: "भुगतान", path: "/admin/payments", iconKey: "Wallet", order: 13, group: "main" },
   { title: "Settings", titleHindi: "सेटिंग्स", path: "/admin/settings", iconKey: "Settings", order: 100, group: "system" },
 ];
