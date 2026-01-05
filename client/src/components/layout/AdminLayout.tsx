@@ -26,6 +26,7 @@ import {
   FileEdit,
   Layout,
   Wallet,
+  MessageSquare,
   LucideIcon,
   Loader2
 } from "lucide-react";
