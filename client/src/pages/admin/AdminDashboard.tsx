@@ -143,6 +143,10 @@ export default function AdminDashboard() {
                 <Users className="h-8 w-8 mx-auto mb-2 text-purple-600" />
                 <span className="text-sm font-medium">Memberships</span>
               </a>
+              <a href="/admin/contact-inquiries" className="p-4 rounded-lg bg-muted text-center" data-testid="link-contact-inquiries">
+                <MessageSquare className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+                <span className="text-sm font-medium">Contact Inquiries</span>
+              </a>
             </div>
           </CardContent>
         </Card>
