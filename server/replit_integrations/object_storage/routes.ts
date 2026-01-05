@@ -19,6 +19,12 @@ import { authMiddleware, adminOnly, type AuthRequest } from "../../middleware/au
  *   location ^~ /uploads/ { alias /www/wwwroot/<site>/uploads/; }
  */
 function getBaseUrl(req: Request) {
+  // Use PUBLIC_BASE_URL if available (for production/deployed environments)
+  if (process.env.PUBLIC_BASE_URL) {
+    return process.env.PUBLIC_BASE_URL;
+  }
+
+  // Fallback to request headers for development
   const proto = (req.headers["x-forwarded-proto"] as string) || req.protocol || "https";
   const host =
     (req.headers["x-forwarded-host"] as string) ||
