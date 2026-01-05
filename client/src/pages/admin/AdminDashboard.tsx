@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Users, 
-  GraduationCap, 
-  CreditCard, 
+import {
+  Users,
+  GraduationCap,
+  CreditCard,
   TrendingUp,
   UserPlus,
-  IndianRupee
+  IndianRupee,
+  MessageSquare
 } from "lucide-react";
 
 interface DashboardStats {
