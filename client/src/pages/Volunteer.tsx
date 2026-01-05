@@ -169,16 +169,107 @@ export default function Volunteer() {
       <section className="py-20 bg-muted/50">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-foreground mb-4">
-                Volunteer Registration Form
-              </h2>
-              <p className="text-muted-foreground">
-                स्वयंसेवक पंजीकरण फॉर्म भरें / Fill the volunteer registration form
-              </p>
-            </div>
+            {isSubmitted ? (
+              <div className="bg-card rounded-2xl p-8 shadow-card">
+                {/* Success Message */}
+                <div className="text-center space-y-6">
+                  {/* Success Icon */}
+                  <div className="flex justify-center">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-green-500 rounded-full blur-lg opacity-20 animate-pulse"></div>
+                      <div className="relative bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-full p-8">
+                        <CheckCircle className="h-16 w-16 text-green-600 dark:text-green-400" />
+                      </div>
+                    </div>
+                  </div>
 
-            <form onSubmit={handleSubmit} className="bg-card rounded-2xl p-8 shadow-card space-y-6">
+                  {/* Main Message */}
+                  <div className="space-y-2">
+                    <h2 className="text-3xl font-bold text-green-600 dark:text-green-400">
+                      बधाई हो! / Congratulations!
+                    </h2>
+                    <p className="text-xl font-semibold text-foreground">
+                      {formData.name && `${formData.name}, `}आपका स्वागत है!
+                    </p>
+                  </div>
+
+                  {/* Description */}
+                  <div className="space-y-4 bg-green-50 dark:bg-green-900/10 rounded-xl p-6 border border-green-200 dark:border-green-800">
+                    <p className="text-lg text-foreground font-medium">
+                      आपका पंजीकरण सफलतापूर्वक पूरा हो गया है!
+                    </p>
+                    <p className="text-foreground leading-relaxed">
+                      धन्यवाद आपको हमारे स्वयंसेवक परिवार में शामिल करने के लिए। आपका आवेदन हमारे प्रशासक दल के अनुमोदन के लिए भेज दिया गया है।
+                    </p>
+                    <p className="text-sm text-muted-foreground italic">
+                      "Your registration has been successfully completed! Thank you for joining our volunteer family. Your application has been sent for approval by our admin team."
+                    </p>
+                  </div>
+
+                  {/* Next Steps */}
+                  <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-6 border border-blue-200 dark:border-blue-800 text-left space-y-3">
+                    <h3 className="font-semibold text-foreground flex items-center gap-2">
+                      <span className="inline-block w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center font-bold">!</span>
+                      अगले कदम / Next Steps:
+                    </h3>
+                    <ol className="space-y-2 text-sm text-foreground">
+                      <li className="flex gap-3">
+                        <span className="font-bold text-blue-600 dark:text-blue-400">1.</span>
+                        <span>आप जल्द ही अपना अनुमोदन संदेश ईमेल द्वारा प्राप्त करेंगे। / You will receive approval confirmation via email soon.</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="font-bold text-blue-600 dark:text-blue-400">2.</span>
+                        <span>अनुमोदन के बाद आप अपने खाते में लॉगिन कर सकते हैं। / After approval, you can login to your account.</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="font-bold text-blue-600 dark:text-blue-400">3.</span>
+                        <span>आप हमारे विभिन्न कार्यक्रमों में भाग ले सकेंगे। / You will be able to participate in our various programs.</span>
+                      </li>
+                    </ol>
+                  </div>
+
+                  {/* CTA Buttons */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                    <Link href="/volunteer/login">
+                      <Button className="w-full" size="lg">
+                        <LogIn className="h-5 w-5 mr-2" />
+                        लॉगिन पेज / Login
+                      </Button>
+                    </Link>
+                    <Link href="/">
+                      <Button variant="outline" size="lg" className="w-full">
+                        होम पेज पर जाएं / Go Home
+                      </Button>
+                    </Link>
+                  </div>
+
+                  {/* Contact Info */}
+                  <div className="pt-4 border-t border-border space-y-2">
+                    <p className="text-sm text-muted-foreground">
+                      किसी सवाल के लिए / For any queries:
+                    </p>
+                    <a
+                      href="tel:+919812676818"
+                      className="inline-flex items-center gap-2 text-primary font-semibold hover:underline"
+                    >
+                      <Phone className="h-4 w-4" />
+                      +91 98126 76818
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-bold text-foreground mb-4">
+                    Volunteer Registration Form
+                  </h2>
+                  <p className="text-muted-foreground">
+                    स्वयंसेवक पंजीकरण फॉर्म भरें / Fill the volunteer registration form
+                  </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="bg-card rounded-2xl p-8 shadow-card space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
@@ -354,59 +445,43 @@ export default function Volunteer() {
                 </div>
               </div>
 
-              {isSubmitted ? (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                    <CheckCircle className="h-5 w-5" />
-                    <div>
-                      <p className="font-medium">धन्यवाद! आपका पंजीकरण सफल रहा।</p>
-                      <p className="text-sm">आपका आवेदन प्रशासक के अनुमोदन के लिए भेज दिया गया है।</p>
-                    </div>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full"
+                    disabled={isSubmitting}
+                    data-testid="button-submit-volunteer"
+                  >
+                    {isSubmitting ? <Loader2 className="h-5 w-5 mr-2 animate-spin" /> : <Send className="h-5 w-5 mr-2" />}
+                    {isSubmitting ? "Submitting..." : "Submit Registration / पंजीकरण जमा करें"}
+                  </Button>
+
+                  {/* Already registered link */}
+                  <div className="text-center pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground">
+                      पहले से पंजीकृत हैं? / Already registered?{" "}
+                      <Link href="/volunteer/login" className="text-primary font-medium hover:underline">
+                        लॉगिन करें / Login
+                      </Link>
+                    </p>
                   </div>
-                  <Link href="/volunteer/login">
-                    <Button className="w-full" size="lg">
-                      <LogIn className="h-5 w-5 mr-2" />
-                      लॉगिन पेज पर जाएं / Go to Login
-                    </Button>
-                  </Link>
+                </form>
+
+                {/* Contact for queries */}
+                <div className="mt-8 text-center p-6 bg-card rounded-xl shadow-card">
+                  <p className="text-muted-foreground mb-2">
+                    For any queries, contact us at:
+                  </p>
+                  <a
+                    href="tel:+919812676818"
+                    className="inline-flex items-center gap-2 text-primary font-semibold text-lg hover:underline"
+                  >
+                    <Phone className="h-5 w-5" />
+                    +91 98126 76818
+                  </a>
                 </div>
-              ) : (
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full"
-                  disabled={isSubmitting}
-                  data-testid="button-submit-volunteer"
-                >
-                  {isSubmitting ? <Loader2 className="h-5 w-5 mr-2 animate-spin" /> : <Send className="h-5 w-5 mr-2" />}
-                  {isSubmitting ? "Submitting..." : "Submit Registration / पंजीकरण जमा करें"}
-                </Button>
-              )}
-
-              {/* Already registered link */}
-              <div className="text-center pt-4 border-t border-border">
-                <p className="text-sm text-muted-foreground">
-                  पहले से पंजीकृत हैं? / Already registered?{" "}
-                  <Link href="/volunteer/login" className="text-primary font-medium hover:underline">
-                    लॉगिन करें / Login
-                  </Link>
-                </p>
-              </div>
-            </form>
-
-            {/* Contact for queries */}
-            <div className="mt-8 text-center p-6 bg-card rounded-xl shadow-card">
-              <p className="text-muted-foreground mb-2">
-                For any queries, contact us at:
-              </p>
-              <a
-                href="tel:+919812676818"
-                className="inline-flex items-center gap-2 text-primary font-semibold text-lg hover:underline"
-              >
-                <Phone className="h-5 w-5" />
-                +91 98126 76818
-              </a>
-            </div>
+              </>
+            )}
           </div>
         </div>
       </section>
